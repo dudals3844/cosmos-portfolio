@@ -1,6 +1,6 @@
 .idea-invitation{display:block;max-width:610px;margin-top:27px;padding-top:22px;border-top:1px solid #c8d7b830;color:#b5c8a8;font-size:14px;line-height:1.9;word-break:keep-all}
-.idea-invitation-title{display:block;font-size:17px;line-height:1.8;color:#d4e3c8}
-.idea-invitation-guide{display:flex;align-items:center;gap:13px;font-size:12px;color:#9eb293;margin-top:13px}
+.idea-invitation-title{display:block;font-size:20px;line-height:1.8;color:#d4e3c8}
+.idea-invitation-guide{display:flex;align-items:center;gap:13px;font-size:16px;color:#b2c7a4;margin-top:13px}
 .idea-invitation:hover .scroll-mouse{border-color:#d3e6bd}
 .social-idea{position:relative;z-index:3;background:#090f13;color:#dce5da}
 .social-idea [hidden]{display:none!important}
@@ -114,3 +114,6 @@ body.motion-paused .idea-invitation .scroll-mouse i{animation:none}
  .shop-concern{padding:22px 9px}.shop-concern>svg{width:52px;height:50px;margin-bottom:9px}.shop-concern>span{font-size:11px}.shop-concern h4{font-size:16px;line-height:1.8;margin-bottom:12px}.shop-concern p{font-size:10px}.concern-orbit{font-size:18px;right:9px;top:13px}
 }
 @media(prefers-reduced-motion:reduce){.concern-orbit{animation:none}.shop-pointer{transition:none}}
+
+.idea-invitation .scroll-mouse{width:22px;height:34px}
+@media(max-width:760px){.idea-invitation-title{font-size:17px}.idea-invitation-guide{font-size:14px}.idea-invitation .scroll-mouse{width:20px;height:31px}}
