@@ -17,3 +17,9 @@ GitHub Pages Source는 GitHub Actions로 설정합니다. main 브랜치에 comm
 HTML·CSS·JavaScript·Canvas·WebGL로 구성하며 별도 서버가 필요하지 않습니다. 그래프와 구조도는 설명용이며, 전략 결합 곡선은 실제 운용 성과가 아닌 개념도입니다.
 
 이미지·로고 출처: [assets/CREDITS.md](assets/CREDITS.md).
+
+## 공개 파일과 보안 정책
+
+`scripts/prepare-site.py`가 허용 목록에 있는 파일만 `_site/`에 복사하며, Pages는 이 결과만 배포합니다. 문서·백업·인증 파일을 배포 경로에 추가하지 마세요. 배포 액션은 전체 커밋 SHA로 고정하고 checkout 인증정보를 유지하지 않습니다.
+
+페이지의 meta CSP는 자체 JavaScript만 허용하고 API 연결·폼 제출·임베드를 차단합니다. 애니메이션을 위해 인라인 스타일은 허용하며, 글꼴은 Google Fonts를 사용합니다.
