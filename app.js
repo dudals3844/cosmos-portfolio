@@ -50,7 +50,7 @@
     const oc = off.getContext('2d', { willReadFrequently: true });
     const fs = parseFloat(style.fontSize), lh = parseFloat(style.lineHeight);
     oc.fillStyle = '#fff'; oc.textBaseline = 'alphabetic'; oc.letterSpacing = style.letterSpacing; oc.textAlign = 'center';
-    const lines = ['SK AIGEN 분들 안녕하세요.', '이번에 지원한', '최영민입니다.'];
+    const lines = ['안녕하세요.', '이번에 SK AIGEN에 지원한', '최영민입니다.', '잘 부탁드립니다.'];
     lines.forEach((line, i) => {
       oc.font = `${i === 2 ? 700 : 300} ${fs}px ${style.fontFamily}`;
       const metrics = oc.measureText(line);

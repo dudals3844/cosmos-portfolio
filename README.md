@@ -23,3 +23,5 @@ HTML·CSS·JavaScript·Canvas·WebGL로 구성하며 별도 서버가 필요하�
 `scripts/prepare-site.py`가 허용 목록에 있는 파일만 `_site/`에 복사하며, Pages는 이 결과만 배포합니다. 문서·백업·인증 파일을 배포 경로에 추가하지 마세요. 배포 액션은 전체 커밋 SHA로 고정하고 checkout 인증정보를 유지하지 않습니다.
 
 페이지의 meta CSP는 자체 JavaScript만 허용하고 API 연결·폼 제출·임베드를 차단합니다. 애니메이션을 위해 인라인 스타일은 허용하며, 글꼴은 Google Fonts를 사용합니다.
+
+연구 개선 사례는 `research-case.js`로 흩어진 작업 → 공통 연구 구조 → 비교·추적 가능한 연구의 세 장면을 자동 재생합니다. 단계 직접 선택·일시정지·화면 밖 재생 중단·동작 줄이기를 지원합니다.
