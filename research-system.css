@@ -301,3 +301,22 @@ body.motion-paused .decision-hub rect{animation:none}
 .orca-plus{font-size:17px;fill:#aec4a4;font-weight:400}
 .orca-collab-node.is-active rect{fill:#25332b;stroke:#c6dbb3}
 .orca-collab-node .rs-sub{font-size:11px}
+
+/* Personal problem-solving context before the technical architecture. */
+.research-case{max-width:1240px;margin:0 auto;padding:30px 5vw 110px;scroll-margin-top:125px}
+.research-case h3{font-size:clamp(25px,2.6vw,38px);font-weight:400;line-height:1.6;letter-spacing:-1px;margin:0 0 28px;word-break:keep-all}
+.research-case-steps{list-style:none;margin:0;padding:0;border-top:1px solid #b9cbb333}
+.research-case-steps li{display:grid;grid-template-columns:125px minmax(0,1fr);gap:20px;padding:22px 0;border-bottom:1px solid #b9cbb320}
+.research-case-steps li>span{font-size:12px;line-height:2.1;color:#b8d0ac;letter-spacing:.3px}
+.research-case-steps p{font-size:16px;line-height:2;color:#c0ccd0}
+.research-case-learning{font-size:18px;color:#d2e0c6;line-height:1.95;margin-top:28px}
+.human-review-boundary{border-left:2px solid #b5cc9e;padding:5px 0 5px 16px;margin:22px 0}
+.human-review-boundary>strong{display:block;font-size:14px;font-weight:500;color:#d2e4c8;margin-bottom:8px}
+.human-review-boundary>p{font-size:14px;line-height:1.95;color:#bdc9c8}
+@media(max-width:760px){
+ .research-case{padding:20px 9vw 75px;scroll-margin-top:105px}
+ .research-case-steps li{grid-template-columns:1fr;gap:7px;padding:20px 0}
+ .research-case-steps p{font-size:15px;line-height:1.95}
+ .research-case-learning{font-size:16px}
+ .human-review-boundary>p{font-size:13px}
+}
