@@ -2,46 +2,61 @@
 (() => {
   const demo=document.querySelector('.case-demo');
   if(!demo)return;
-  const buttons=[...demo.querySelectorAll('[data-case-phase]')];
   const headings=[...demo.querySelectorAll('[data-case-heading]')];
   const copy=[...demo.querySelectorAll('[data-case-copy]')];
-  const panels=[...demo.querySelectorAll('[data-case-panel]')];
-  const graph=[...demo.querySelectorAll('.case-workflow-track li')];
-  const diagrams=[...demo.querySelectorAll('svg')];
-  const play=demo.querySelector('.case-play');
+  const viewport=demo.querySelector('.case-viewport');
+  const graph=demo.querySelector('.story-graph');
+  const nodes=[...graph.querySelectorAll('.story-node')];
+  const signal=graph.querySelector('.story-signal');
+  const halo=graph.querySelector('.story-signal-halo');
+  const count=demo.querySelector('.case-scroll-count');
+  const packets=[...graph.querySelectorAll('animateMotion')];
+  const paths=['story-plan','story-wrong','story-rag','story-work','story-measure','story-record'].map(id=>graph.querySelector(`#${id}`));
+  const lengths=paths.map(path=>path.getTotalLength());
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const durations=[3800,5000,6000,6500];
-  let phase=0,visible=false,manualPause=false,stageTimer=0,graphTimer=0,graphStep=0;
-  const blocked=()=>manualPause||reduced.matches||document.hidden||document.body.classList.contains('motion-paused');
-  function highlightGraph(){graph.forEach((node,i)=>node.classList.toggle('is-current',i===graphStep));}
-  function sync(){
-    clearTimeout(stageTimer);clearInterval(graphTimer);
-    const stopped=blocked()||!visible;
-    demo.classList.toggle('is-paused',stopped);
-    play.textContent=phase===4?'다시 보기 ↺':blocked()?'재생 ▷':'일시정지 Ⅱ';
-    play.setAttribute('aria-label',phase===4?'연구 이야기 다시 보기':blocked()?'연구 이야기 재생':'연구 이야기 일시정지');
-    play.disabled=reduced.matches||document.body.classList.contains('motion-paused');
-    diagrams.forEach(svg=>{
-      if(stopped||svg.closest('[data-case-panel]').hidden)svg.pauseAnimations?.();
-      else svg.unpauseAnimations?.();
+  let current=-1,scheduled=false;
+  const stationary=()=>reduced.matches||document.body.classList.contains('motion-paused');
+  function update(){
+    scheduled=false;
+    const still=stationary();
+    demo.classList.toggle('is-static',still);
+    demo.classList.toggle('is-paused',still||document.hidden);
+    const rect=demo.getBoundingClientRect();
+    const progress=Math.max(0,Math.min(1,-rect.top/Math.max(1,demo.offsetHeight-innerHeight)));
+    const phase=still?paths.length-1:Math.min(paths.length-1,Math.floor(progress*paths.length));
+    const portion=still?1:Math.min(1,progress*paths.length-phase);
+    if(current!==phase){
+      current=phase;demo.dataset.phase=String(phase);
+      count.textContent=`${String(phase+1).padStart(2,'0')} / ${String(paths.length).padStart(2,'0')}`;
+    }
+    headings.forEach((h,i)=>h.hidden=!still&&i!==phase);
+    copy.forEach((p,i)=>p.hidden=!still&&i!==phase);
+    const point=paths[phase].getPointAtLength(lengths[phase]*portion);
+    for(const dot of [signal,halo]){dot.setAttribute('cx',point.x);dot.setAttribute('cy',point.y);}
+    if(viewport.clientWidth<760&&!still){
+      const scale=graph.getBoundingClientRect().width/1200;
+      viewport.scrollTo({left:Math.max(0,point.x*scale-viewport.clientWidth/2),top:Math.max(0,point.y*scale-viewport.clientHeight/2),behavior:'auto'});
+    }
+    let nearest=null,distance=Infinity;
+    nodes.forEach(node=>{
+      node.classList.remove('is-current');
+      if((phase<2)!==!!node.closest('.story-plan-map'))return;
+      const d=Math.hypot(Number(node.dataset.x)-point.x,Number(node.dataset.y)-point.y);
+      if(d<distance){distance=d;nearest=node;}
     });
-    if(stopped)return;
-    if(phase<4)stageTimer=setTimeout(()=>select(phase+1),durations[phase]);
-    if(phase===3)graphTimer=setInterval(()=>{graphStep=(graphStep+1)%graph.length;highlightGraph();},1100);
+    nearest?.classList.add('is-current');
+    const active=!still&&!document.hidden&&rect.top<innerHeight&&rect.bottom>0;
+    // Pause declarative request/response pulses when the story is offscreen.
+    if(active)graph.unpauseAnimations?.();else graph.pauseAnimations?.();
+    packets.forEach(packet=>packet.parentElement.style.opacity=active?'1':'0');
   }
-  function select(index){
-    phase=index;demo.dataset.phase=String(index);
-    buttons.forEach((button,i)=>button.setAttribute('aria-pressed',String(i===index)));
-    headings.forEach((text,i)=>text.hidden=i!==index);
-    copy.forEach((text,i)=>text.hidden=i!==index);
-    panels.forEach(panel=>{const i=Number(panel.dataset.casePanel);panel.hidden=i===0?index>1:i!==index;});
-    graphStep=0;highlightGraph();sync();
-  }
-  buttons.forEach((button,i)=>button.addEventListener('click',()=>{manualPause=false;select(i);}));
-  play.addEventListener('click',()=>{if(phase===4){manualPause=false;select(0);}else{manualPause=!manualPause;sync();}});
-  new IntersectionObserver(entries=>{visible=entries[0].isIntersecting;sync();},{threshold:.3}).observe(demo);
-  document.addEventListener('visibilitychange',sync);
-  document.querySelector('#motion')?.addEventListener('click',sync);
-  reduced.addEventListener('change',()=>{if(reduced.matches)select(4);else sync();});
-  select(reduced.matches||document.body.classList.contains('motion-paused')?4:0);
+  function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
+  window.addEventListener('scroll',schedule,{passive:true});
+  window.addEventListener('resize',schedule,{passive:true});
+  document.addEventListener('visibilitychange',schedule);
+  document.querySelector('#motion')?.addEventListener('click',()=>{current=-1;schedule();});
+  reduced.addEventListener('change',()=>{current=-1;schedule();});
+  new IntersectionObserver(schedule).observe(demo);
+  document.fonts.ready.then(schedule);
+  update();
 })();
