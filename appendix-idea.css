@@ -1,0 +1,87 @@
+.idea-invitation{display:block;max-width:610px;margin-top:27px;padding-top:22px;border-top:1px solid #c8d7b830;color:#b5c8a8;font-size:14px;line-height:1.9;word-break:keep-all}
+.idea-invitation-title{display:block;font-size:17px;line-height:1.8;color:#d4e3c8}
+.idea-invitation-guide{display:flex;align-items:center;gap:13px;font-size:12px;color:#9eb293;margin-top:13px}
+.idea-invitation:hover .scroll-mouse{border-color:#d3e6bd}
+.social-idea{position:relative;z-index:3;background:#090f13;color:#dce5da}
+.social-idea [hidden]{display:none!important}
+.idea-intro{min-height:65svh;max-width:1200px;margin:0 auto;padding:160px 7vw 100px;display:flex;flex-direction:column;justify-content:center;border-top:1px solid #b7c3a82b}
+.idea-eyebrow{font-size:12px;letter-spacing:.8px;color:#9fb68e;margin-bottom:28px}
+.idea-intro h2{font-size:clamp(28px,3vw,44px);line-height:1.6;letter-spacing:-1.2px}
+.idea-intro>p{font-size:18px;color:#b8c8c9;line-height:1.95}
+.idea-status{font-size:11px;color:#86978f;margin-top:22px;line-height:1.8}
+.idea-sequence{position:relative;height:430svh}
+.idea-pin{position:sticky;top:0;height:100svh;padding:110px 7vw 65px;display:flex;flex-direction:column;gap:20px;background:radial-gradient(ellipse at 50% 40%,#20372a45,transparent 70%),#090f13;overflow:hidden}
+.idea-topline{max-width:1200px;width:100%;margin:auto auto 0;display:flex;justify-content:space-between;color:#9eb58f;font-size:11px;letter-spacing:.7px}
+.idea-step-count{color:#ccdfbb}
+.idea-headings{min-height:75px;text-align:center;display:grid;align-items:center}
+.idea-headings h3{font-size:clamp(25px,2.7vw,39px);font-weight:400;line-height:1.55;letter-spacing:-1px;margin:0;color:#e1ebd9;word-break:keep-all}
+.idea-market{position:relative;display:grid;grid-template-columns:1fr 1.03fr 1fr;align-content:center;align-items:center;gap:25px 55px;max-width:1100px;width:100%;margin:auto;flex:1;min-height:0;padding:10px 15px}
+.idea-person{position:relative;text-align:center;border:1px solid #8da28366;border-radius:12px;padding:20px 12px;background:#132125;z-index:2}
+.idea-person svg{height:65px;width:80px;margin-bottom:8px;fill:none;stroke:#b4d29e;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.idea-person h4{font-size:22px;line-height:1.6;font-weight:500;color:#e2ecd9;margin:0 0 11px}
+.idea-person p{font-size:15px;color:#c1cdca;line-height:1.8}
+.idea-agreement{z-index:2;position:relative;text-align:center;border:1px dashed #90a38170;border-radius:10px;padding:22px 10px;background:#101b1f;transition:border-color .5s,background .5s}
+.idea-agreement-kicker{display:block;font-size:11px;color:#a0b29a;margin-bottom:13px;line-height:1.7}
+.idea-agreement strong{font-size:20px;font-weight:500;color:#dbe9cc;line-height:1.7;word-break:keep-all}
+.idea-contract>div{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:18px}
+.idea-contract>div>span{font-size:12px;color:#d1dec8;padding:5px 8px;border:1px solid #a6be9165;border-radius:4px}
+.idea-contract small{display:block;font-size:10px;line-height:1.7;color:#9bb48f;margin-top:14px}
+.idea-market:not([data-phase="0"]) .idea-agreement{border-style:solid;border-color:#bdd8a3;background:#24372a}
+.idea-connecting{position:absolute;top:34%;height:2px;background:#a6c28b55;width:20%;opacity:0;transition:opacity .6s;pointer-events:none}
+.idea-supply{left:23%}.idea-demand{right:23%}
+.idea-connecting>span{position:absolute;bottom:10px;width:100%;text-align:center;color:#b1c69f;font-size:10px;white-space:nowrap}
+.idea-connecting i{display:block;position:absolute;width:5px;height:5px;top:-2px;border-radius:50%;background:#d4e8b5;box-shadow:0 0 9px #c4e3a1;animation:idea-connect 2.4s linear infinite}
+.idea-demand i{animation-direction:reverse}
+.idea-market:not([data-phase="0"]) .idea-connecting{opacity:1}
+@keyframes idea-connect{from{left:0}to{left:100%}}
+.idea-price{grid-column:1/-1;max-width:700px;width:100%;margin:0 auto;text-align:center}
+.idea-price svg{display:block;width:100%;max-height:140px;overflow:visible}
+.idea-price path{fill:none;stroke-width:2.3}
+.idea-price-axis{stroke:#7f91864a;stroke-width:1!important}
+.idea-spot-price{stroke:#be9b7b;stroke-dasharray:5 5}
+.idea-fixed-price{stroke:#c6e4a6;stroke-dasharray:650;animation:idea-price-draw 1.6s ease both}
+@keyframes idea-price-draw{from{stroke-dashoffset:650}to{stroke-dashoffset:0}}
+.idea-price text{font-size:12px;fill:#a1b1ab;font-family:inherit}
+.idea-price .idea-spot-label{fill:#c2a48e}.idea-price .idea-fixed-label{fill:#c5deac}
+.idea-price>span{display:block;font-size:9px;color:#7c9185;margin-top:7px;line-height:1.8}
+.idea-benefit{display:block;font-size:13px;color:#c9e3b4;margin-top:15px;line-height:1.9;word-break:keep-all}
+.idea-outcomes{grid-column:1/-1;display:flex;justify-content:center;gap:45px;text-align:center}
+.idea-outcomes>div{flex:1;max-width:330px;border-top:1px solid #a8c78e65;padding-top:14px}
+.idea-outcomes span{display:block;font-size:11px;color:#94ad85;margin-bottom:9px}
+.idea-outcomes strong{font-size:20px;font-weight:400;line-height:1.7;color:#deedcf}
+.idea-copy{width:100%;max-width:1000px;min-height:65px;margin:0 auto;display:grid;align-items:center;text-align:center}
+.idea-copy>p{font-size:15px;line-height:1.9;color:#b1c2bd;word-break:keep-all}
+.idea-scroll-hint{display:block;text-align:center;font-size:10px;color:#819978;letter-spacing:.3px}
+.idea-ending{max-width:1000px;margin:auto;padding:70px 7vw 120px}
+.idea-ending>p{font-size:20px;color:#d0e0c3;line-height:1.9;word-break:keep-all}
+.idea-ending details{margin-top:30px;font-size:12px;color:#a2b69b;line-height:1.9}
+.idea-ending summary{cursor:pointer}.idea-ending details p{font-size:12px;margin:15px 0;color:#97aaa4}
+.idea-ending details a{font-size:11px;text-decoration:underline;text-underline-offset:4px}
+.idea-return{display:inline-block;font-size:12px;color:#b9cca9;margin-top:35px;border-bottom:1px solid #a9bd9655;padding-bottom:7px}
+body.appendix-active .chapter-nav,body.appendix-active footer{opacity:0;pointer-events:none}
+.social-idea.is-paused .idea-connecting i{animation-play-state:paused}
+.social-idea.is-paused .idea-fixed-price{animation:none;stroke-dashoffset:0}
+.social-idea.is-static .idea-sequence{height:auto}.social-idea.is-static .idea-pin{position:relative;height:auto;min-height:100svh;overflow:visible}
+.social-idea.is-static .idea-headings{display:block}.social-idea.is-static .idea-headings h3{font-size:23px;margin:16px 0}
+.social-idea.is-static .idea-market{flex:none;min-height:400px}.social-idea.is-static .idea-copy>p{margin:12px 0}
+.social-idea.is-static .idea-scroll-hint{display:none}
+@media(max-width:760px){
+ .idea-invitation{font-size:12px;margin-top:35px;padding-top:20px;line-height:1.95}
+ .idea-intro{padding:115px 8vw 70px;min-height:70svh}.idea-intro h2{font-size:29px;line-height:1.6}.idea-intro>p{font-size:15px}.idea-status{font-size:10px}
+ .idea-sequence{height:430svh}.idea-pin{padding:90px 7vw 55px;gap:13px}
+ .idea-topline{font-size:9px}.idea-headings{min-height:82px}.idea-headings h3{font-size:24px;line-height:1.6}
+ .idea-market{grid-template-columns:1fr 1fr;gap:12px;padding:0;align-content:center;overflow-y:auto;scrollbar-width:thin}
+ .idea-person{padding:13px 7px}.idea-person svg{height:43px;width:55px;margin-bottom:3px}.idea-person h4{font-size:17px;margin-bottom:8px}.idea-person p{font-size:12px;line-height:1.8}
+ .idea-farmer{order:0}.idea-restaurant{order:1}.idea-agreement{order:2;grid-column:1/-1;padding:12px 8px}
+ .idea-agreement-kicker{font-size:10px;margin-bottom:6px}.idea-agreement strong{font-size:17px}
+ .idea-contract>div{margin-top:8px;gap:6px}.idea-contract>div>span{font-size:10px;padding:3px 7px}.idea-contract small{font-size:9px;margin-top:7px}
+ .idea-connecting{display:none}.idea-price,.idea-outcomes{order:3}
+ .idea-benefit{font-size:11px;margin-top:8px}.idea-price svg{max-height:105px}.idea-price>span{font-size:8px}
+ .idea-outcomes{gap:15px}.idea-outcomes>div{padding-top:9px}.idea-outcomes strong{font-size:15px}.idea-outcomes span{font-size:10px;margin-bottom:4px}
+ .idea-copy{min-height:100px}.idea-copy>p{font-size:12px;line-height:1.9}.idea-scroll-hint{font-size:9px}
+ .idea-ending{padding:50px 8vw 95px}.idea-ending>p{font-size:17px}.idea-ending>p br{display:none}
+}
+@media(prefers-reduced-motion:reduce){.idea-connecting i,.idea-fixed-price{animation:none}.idea-agreement,.idea-connecting{transition:none}}
+
+body.motion-paused .idea-invitation .scroll-mouse i{animation:none}
+@media(prefers-reduced-motion:reduce){.idea-invitation .scroll-mouse i{animation:none}}

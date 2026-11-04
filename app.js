@@ -238,7 +238,9 @@
       $('.progress-label').textContent = `${String(active).padStart(2, '0')} / ${String(sections.length - 1).padStart(2, '0')}`;
       $('.caption-number').textContent = `${String(active + 1).padStart(2, '0')} — ${String(sections.length).padStart(2, '0')}`;
     }
-    scrollProgress = Math.min(1, Math.max(0, scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)));
+    const lastChapter = sections[sections.length - 1];
+    const mainEnd = lastChapter.offsetTop + lastChapter.offsetHeight;
+    scrollProgress = Math.min(1, Math.max(0, scrollY / Math.max(1, mainEnd - innerHeight)));
     $('#progress').style.width = `${scrollProgress * 100}%`;
     updateCareerFocus();
     updateNameStory();
