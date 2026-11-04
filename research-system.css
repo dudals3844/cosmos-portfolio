@@ -383,3 +383,32 @@ body.motion-paused .decision-hub rect{animation:none}
 .case-demo[data-phase="5"] .story-infra{stroke:#c0d9a4;fill:#20332b}
 .case-demo[data-phase="5"] .story-record-feedback{stroke:#c0d9a4}
 .research-story-sources{margin-top:0}
+
+/* Four core stages; show supporting exchanges only when that stage is in focus. */
+.story-workflow-map .story-node text{font-size:24px;font-weight:600}
+.story-workflow-map .story-node .story-sub{font-size:15px;font-weight:400}
+.story-mainline{fill:none;stroke:#9eb99165;stroke-width:3;marker-end:url(#story-arrow)}
+.story-workflow-map .story-edge{stroke-width:2}
+.story-agent-node,.story-rag-labels,.story-retrieval,.story-mcp-node,.story-mcp-labels,.story-measure-edge,.story-repair,.story-work-note,.story-operations{display:none}
+.case-demo[data-phase="2"] .story-agent-node,.case-demo[data-phase="2"] .story-rag-labels,.case-demo[data-phase="2"] .story-retrieval{display:block}
+.case-demo[data-phase="3"] .story-work-note{display:block}
+.case-demo[data-phase="4"] .story-mcp-node,.case-demo[data-phase="4"] .story-mcp-labels,.case-demo[data-phase="4"] .story-measure-edge,.case-demo[data-phase="4"] .story-repair{display:block}
+.case-demo[data-phase="5"] .story-operations{display:block}
+.story-work-note{font-size:19px;fill:#b3c6a7}
+.story-approval-label{font-size:17px;fill:#d6ccaa}
+.story-workflow-map .story-node{opacity:.42;transition:opacity .35s}
+.case-demo[data-phase="2"] .story-search-node,.case-demo[data-phase="2"] .story-agent-node,.case-demo[data-phase="3"] .story-search-node,.case-demo[data-phase="3"] .story-build-node,.case-demo[data-phase="4"] .story-build-node,.case-demo[data-phase="4"] .story-evaluate-node,.case-demo[data-phase="4"] .story-mcp-node,.case-demo[data-phase="5"] .story-evaluate-node,.case-demo[data-phase="5"] .story-record-node,.case-demo.is-static .story-workflow-map .story-node{opacity:1}
+.case-demo.is-static .story-operations{display:block}
+@media(prefers-reduced-motion:reduce){.story-workflow-map .story-node{transition:none}}
+
+.story-main-arrow{fill:none;stroke:#a5bf9480;stroke-width:2.5;marker-end:url(#story-arrow)}
+
+.story-detour .story-detour-note{font-size:15px;fill:#e7b69c}
+/* Keep node backgrounds opaque so connector lines stay behind the labels. */
+.story-workflow-map .story-node{opacity:1}
+.story-workflow-map .story-node rect{fill:#101d25;stroke:#607b7065}
+.story-workflow-map .story-node text{fill:#91a393}
+.story-workflow-map .story-node .story-sub{fill:#718994}
+.story-workflow-map .story-node.is-current rect{fill:#284334;stroke:#d7ecbc}
+.story-workflow-map .story-node.is-current text{fill:#e3f2d8}
+.story-workflow-map .story-node.is-current .story-sub{fill:#b1c5b0}
