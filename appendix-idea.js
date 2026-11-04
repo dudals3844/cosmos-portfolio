@@ -1,6 +1,6 @@
 'use strict';
 (() => {
-  const idea=document.querySelector('#social-idea');
+  const idea=document.querySelector('#future-purchase');
   if(!idea)return;
   const sequence=idea.querySelector('.idea-sequence');
   const market=idea.querySelector('.idea-market');
@@ -46,7 +46,7 @@
     idea.querySelector('.shop-reserve-before').hidden=phase===3;
     idea.querySelector('.shop-reserve-after').hidden=phase!==3;
     idea.classList.toggle('is-paused',still||document.hidden||rect.top>=innerHeight||rect.bottom<=0);
-    const all=idea.getBoundingClientRect();
+    const all=document.querySelector('#social-idea').getBoundingClientRect();
     document.body.classList.toggle('appendix-active',all.top<innerHeight*.5&&all.bottom>innerHeight*.1);
   }
   function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}

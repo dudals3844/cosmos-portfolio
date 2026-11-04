@@ -7,7 +7,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_FILES = (
     "index.html", ".nojekyll", "app.js", "styles.css", "flower3d.js",
     "research-system.js", "research-system.css", "decision-routing.js", "research-case.js",
-    "diversification.js", "diversification.css", "appendix-idea.js", "appendix-idea.css",
+    "diversification.js", "diversification.css", "appendix-idea.js", "appendix-idea.css", "inventory-idea.js",
     "assets/diversification-demo.js", "assets/favicon.svg",
     "assets/brown_mud_02.jpg", "assets/CREDITS.md",
     "assets/brands/gmail.svg", "assets/brands/googlecalendar.svg",
