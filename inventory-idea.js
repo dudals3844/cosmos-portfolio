@@ -9,17 +9,14 @@
   const copy=[...idea.querySelectorAll('[data-inventory-copy]')];
   const count=idea.querySelector('.inventory-step-count');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-  const book=idea.querySelector('.book-demo');
-  const action=idea.querySelector('.book-action-label');
-  const actions=['매수호가와 매도호가가 비어 있습니다.','100원 매수호가에 1주 주문을 올립니다.','매수 체결 · 100원에 1주를 샀습니다.','보유한 1주를 101원 매도호가에 올립니다.','매도 체결 · 101원에 1주를 팔았습니다.',''];
+  const book=idea.querySelector('.order-link-demo');
   const fee=idea.querySelector('.inventory-fee');
   const replay=idea.querySelector('.book-replay');
   let scheduled=false,seen=-1,clock=0,last=null,raf=0,bookDone=false;
   function renderMotion(still=false){
-    const step=still||bookDone?5:Math.min(5,Math.floor(clock/1500));
-    if(!still&&seen===0&&step===5)bookDone=true;
-    book.dataset.step=String(step);
-    action.textContent=actions[step];
+    const step=still||bookDone?2:Math.min(2,Math.floor(clock/1100));
+    if(!still&&seen===0&&step===2)bookDone=true;
+    book.dataset.state=String(step);
     fee.dataset.feeStep=String(still?2:Math.min(2,Math.floor(clock/1800)));
   }
   function frame(t){
@@ -42,7 +39,7 @@
     panels.forEach((panel,i)=>panel.hidden=!still&&i!==phase);
     copy.forEach((text,i)=>text.hidden=!still&&i!==phase);
     if(seen!==phase){seen=phase;clock=0;last=null;}
-    const active=!still&&!document.hidden&&rect.top<innerHeight*.12&&rect.bottom>innerHeight*.12;
+    const active=!still&&!document.hidden&&rect.top<innerHeight&&rect.bottom>0;
     idea.classList.toggle('is-paused',!active);
     const bookRect=book.getBoundingClientRect();
     const bookVisible=bookRect.top>=0&&bookRect.bottom<=innerHeight;
@@ -53,7 +50,7 @@
   }
   replay.addEventListener('click',()=>{
     cancelAnimationFrame(raf);raf=0;last=null;clock=0;bookDone=false;
-    book.dataset.step='0';renderMotion();update();
+    book.dataset.state='0';renderMotion();update();
   });
   function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(update);}}
   window.addEventListener('scroll',schedule,{passive:true});
