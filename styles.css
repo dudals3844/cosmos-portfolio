@@ -278,3 +278,5 @@ body.motion-paused .name-reason{opacity:1;transform:none}
  .closing-links a{font-size:10px;gap:19px}
  .closing-credit{font-size:6px;margin-top:20px;letter-spacing:1px}
 }
+
+.brand{display:flex;align-items:center}.brand-mark{flex:none}
