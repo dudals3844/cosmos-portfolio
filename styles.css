@@ -255,11 +255,11 @@ body.motion-paused .name-reason{opacity:1;transform:none}
 /* A quiet closing connects the finance background to cross-domain collaboration. */
 .closing-chapter{padding:135px 9vw 105px 28vw;min-height:100svh}
 .closing-chapter .chapter-content{max-width:1000px}
-.closing-chapter h2{font-size:clamp(27px,3vw,46px);line-height:1.5;letter-spacing:-1.7px;margin-bottom:30px;word-break:keep-all}
-.closing-background,.closing-contribution{font-size:14px;line-height:2.15;color:#a8b6bf;word-break:keep-all;margin:0 0 23px}
+.closing-chapter h2{font-size:clamp(32px,3.2vw,50px);line-height:1.5;letter-spacing:-1.7px;margin-bottom:30px;word-break:keep-all}
+.closing-background,.closing-contribution{font-size:18px;line-height:2;color:#a8b6bf;word-break:keep-all;margin:0 0 23px}
 .closing-contribution{color:#c0ccc8}
-.closing-promise{font-size:18px;line-height:2;color:#d1e1c5;letter-spacing:-.3px;word-break:keep-all;margin-top:28px}
-.closing-signoff{font-size:16px;color:#b9c9b3;margin-top:38px;line-height:2;opacity:.7;transition:opacity 1.2s ease,color 1.2s ease}
+.closing-promise{font-size:21px;line-height:1.95;color:#d1e1c5;letter-spacing:-.3px;word-break:keep-all;margin-top:28px}
+.closing-signoff{font-size:19px;color:#b9c9b3;margin-top:38px;line-height:2;opacity:.7;transition:opacity 1.2s ease,color 1.2s ease}
 .closing-signoff strong{font-weight:500;color:#d3e3c6}
 .closing-chapter.flower-complete .closing-signoff{opacity:1;color:#dcead1}
 .closing-links{display:flex;gap:28px;align-items:center;margin-top:27px}
@@ -270,11 +270,11 @@ body.motion-paused .name-reason{opacity:1;transform:none}
 @media(max-width:760px){
  .closing-chapter{padding:115px 12vw 80px 9vw;min-height:100svh}
  .closing-chapter .chapter-content{background:radial-gradient(ellipse,#080a1070,transparent)}
- .closing-chapter h2{font-size:29px;letter-spacing:-1.3px;line-height:1.55;margin-bottom:25px}
- .closing-background,.closing-contribution{font-size:12px;line-height:2.05;margin-bottom:19px}
+ .closing-chapter h2{font-size:32px;letter-spacing:-1.3px;line-height:1.55;margin-bottom:25px}
+ .closing-background,.closing-contribution{font-size:15px;line-height:1.95;margin-bottom:19px}
  .closing-break{display:none}
- .closing-promise{font-size:15px;line-height:1.95;margin-top:23px}
- .closing-signoff{font-size:14px;margin-top:27px}
+ .closing-promise{font-size:17px;line-height:1.95;margin-top:23px}
+ .closing-signoff{font-size:17px;margin-top:27px}
  .closing-links{margin-top:21px;gap:24px}
  .closing-links a{font-size:10px;gap:19px}
  .closing-credit{font-size:6px;margin-top:20px;letter-spacing:1px}
