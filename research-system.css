@@ -351,7 +351,7 @@ body.motion-paused .decision-hub rect{animation:none}
 @media(max-width:760px){
  .case-controls{padding:12px;gap:8px;align-items:flex-start}
  .case-controls>div{gap:12px;flex-wrap:wrap}.case-controls button{font-size:10px}.case-controls .case-play{font-size:9px}
- .case-scene{height:395px;margin:0 8px}
+ .case-scene{height:430px;margin:0 8px}
  .case-request{font-size:12px;top:30px;padding:12px 10px;width:90%}
  .case-node{top:170px;width:30%;min-height:190px;padding:14px 5px 12px}
  .case-node-evidence{left:1%}.case-node-test{left:35%}.case-node-graph{right:1%}
