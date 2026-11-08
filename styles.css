@@ -259,7 +259,7 @@ body.motion-paused .name-reason{opacity:1;transform:none}
 .closing-background,.closing-contribution{font-size:18px;line-height:2;color:#a8b6bf;word-break:keep-all;margin:0 0 23px}
 .closing-contribution{color:#c0ccc8}
 .closing-promise{font-size:21px;line-height:1.95;color:#d1e1c5;letter-spacing:-.3px;word-break:keep-all;margin-top:28px}
-.closing-signoff{font-size:19px;color:#b9c9b3;margin-top:38px;line-height:2;opacity:.7;transition:opacity 1.2s ease,color 1.2s ease}
+.closing-signoff{font-size:28px;color:#b9c9b3;margin-top:38px;line-height:2;opacity:.7;transition:opacity 1.2s ease,color 1.2s ease}
 .closing-signoff strong{font-weight:500;color:#d3e3c6}
 .closing-chapter.flower-complete .closing-signoff{opacity:1;color:#dcead1}
 .closing-links{display:flex;gap:28px;align-items:center;margin-top:27px}
@@ -273,7 +273,7 @@ body.motion-paused .name-reason{opacity:1;transform:none}
  .closing-chapter h2{font-size:32px;letter-spacing:-1.3px;line-height:1.55;margin-bottom:25px}
  .closing-background,.closing-contribution{font-size:15px;line-height:1.95;margin-bottom:19px}
  .closing-promise{font-size:17px;line-height:1.95;margin-top:23px}
- .closing-signoff{font-size:17px;margin-top:27px}
+ .closing-signoff{font-size:23px;margin-top:27px}
  .closing-links{margin-top:21px;gap:24px}
  .closing-links a{font-size:10px;gap:19px}
  .closing-credit{font-size:6px;margin-top:20px;letter-spacing:1px}
