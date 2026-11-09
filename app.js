@@ -103,8 +103,17 @@
       const size=.35+Math.pow(rand(),4)*1.1;
       g.fillRect(x,y,size,size);
     }
-    cloud(0,0,radius*.29,'220,209,193',.26,.27);
-    cloud(-radius*.01,-3,radius*.12,'237,224,202',.3,.27);
+    // A warm, elongated bulge gives the disk a distinct stellar center.
+    cloud(0,-3,radius*.36,'230,202,164',.38,.40);
+    cloud(0,-4,radius*.23,'248,224,188',.60,.43);
+    cloud(-radius*.01,-5,radius*.105,'255,243,220',.78,.48);
+    cloud(-radius*.01,-5,radius*.045,'255,252,238',.70,.53);
+    for(let i=0;i<1600;i++){
+      const x=normal()*radius*.09,y=normal()*radius*.032-4;
+      const size=.35+rand()*.7;
+      g.fillStyle=`rgba(255,237,209,${.18+rand()*.43})`;
+      g.fillRect(x,y,size,size);
+    }
     // Irregular dust clouds break the light into the long, horizontal disk.
     for(let i=0;i<65;i++){
       const x=(rand()-.5)*radius*1.7;
