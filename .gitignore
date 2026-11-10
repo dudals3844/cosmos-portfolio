@@ -14,3 +14,5 @@ kubeconfig*.yml
 *.key
 __pycache__/
 *.pyc
+.omc/
+reference/

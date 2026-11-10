@@ -75,7 +75,7 @@
 .system-notes{max-width:1180px;margin:auto;padding:45px 5vw 90px}
 .system-notes details{max-width:800px;border-bottom:1px solid #b5c7ae20;padding-bottom:18px}
 .system-notes details p{font-size:11px;line-height:2;color:#8498a0;padding-top:15px;word-break:keep-all}
-.system-notes>span{display:block;font-size:9px;color:#617780;margin-top:16px;line-height:1.8}
+
 @keyframes rs-flow{to{stroke-dashoffset:-26}}
 @keyframes rs-panel-in{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 body.motion-paused .rs-wire{animation:none}
