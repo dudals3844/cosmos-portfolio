@@ -22,6 +22,22 @@
   const packets=[...graph.querySelectorAll('animateMotion')];
   const paths=['story-plan','story-wrong','story-work','story-measure','story-record'].map(id=>graph.querySelector(`#${id}`));
   const lengths=paths.map(path=>path.getTotalLength());
+  // Page 2: the detour boxes, in the order the signal reaches them. Each box shows its own explanation beside it
+  // while the signal is there, and the last one keeps it until the page changes; the caption keeps the intro
+  // until the last box, then the conclusion.
+  const DETOUR_PHASE=1,DETOUR_SAMPLES=240;
+  const detours=[...graph.querySelectorAll('.story-detour')];
+  const detourCopy=[...demo.querySelectorAll('[data-detour-line]')];
+  const detourStops=detours.map(box=>{
+    const rect=box.querySelector('rect'),cx=Number(rect.getAttribute('x'))+Number(rect.getAttribute('width'))/2,cy=Number(rect.getAttribute('y'))+Number(rect.getAttribute('height'))/2;
+    let best=0,distance=Infinity;
+    for(let i=0;i<=DETOUR_SAMPLES;i++){
+      const point=paths[DETOUR_PHASE].getPointAtLength(lengths[DETOUR_PHASE]*i/DETOUR_SAMPLES);
+      const d=Math.hypot(point.x-cx,point.y-cy);
+      if(d<distance){distance=d;best=i/DETOUR_SAMPLES;}
+    }
+    return best;
+  });
   // The paper scene is a page of the journey too.
   const pageCount=paths.length+1;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -48,11 +64,23 @@
     }
     headings.forEach((h,i)=>h.hidden=!still&&i!==phase);
     copy.forEach((p,i)=>p.hidden=!still&&i!==phase);
+    const beat=!still&&phase===DETOUR_PHASE?journey.detourBeat(portion,detourStops):null;
+    const explained=beat===null?-1:journey.explainedDetour(beat,detours.length);
+    detours.forEach((box,i)=>{
+      box.classList.toggle('is-waiting',beat!==null&&beat<i+1);
+      box.classList.toggle('is-current',i===explained);
+    });
+    const lastBeat=detours.length+1;
+    const showLine={intro:beat!==null&&beat<lastBeat,end:beat===lastBeat,issue:false};
+    detourCopy.forEach(line=>line.hidden=beat!==null&&!showLine[line.dataset.detourLine]);
     const point=paths[phase].getPointAtLength(lengths[phase]*portion);
     for(const dot of [signal,halo]){dot.setAttribute('cx',point.x);dot.setAttribute('cy',point.y);}
     if(viewport.clientWidth<760&&!still){
       const scale=graph.getBoundingClientRect().width/1200;
-      viewport.scrollTo({left:Math.max(0,point.x*scale-viewport.clientWidth/2),top:Math.max(0,point.y*scale-viewport.clientHeight/2),behavior:'auto'});
+      // While a detour box explains itself, keep the box and its explanation in view instead of the signal.
+      const box=explained>=0?detours[explained].getBBox():null;
+      const focus=box?{x:box.x+box.width/2,y:box.y+box.height/2}:point;
+      viewport.scrollTo({left:Math.max(0,focus.x*scale-viewport.clientWidth/2),top:Math.max(0,focus.y*scale-viewport.clientHeight/2),behavior:'auto'});
     }
     let nearest=null,distance=Infinity;
     nodes.forEach(node=>{

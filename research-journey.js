@@ -31,7 +31,25 @@
     return clamp01((Math.min(bottom, viewportHeight) - Math.max(top, 0)) / viewportHeight);
   }
 
-  const api = Object.freeze({ journeyState, coverage });
+  // Page 2: which explanation to show as the signal runs along the detour. `stops` are the portions of the
+  // path at which the signal passes each detour box. Beat 0 is the intro, 1..n one per box (each shows a
+  // little before the signal arrives and gives way halfway to the next box), and n + 1 the conclusion.
+  const DETOUR_LEAD = .08, DETOUR_TRAIL = .1;
+  function detourBeat(portion, stops) {
+    if (portion < stops[0] - DETOUR_LEAD) return 0;
+    for (let i = 0; i < stops.length; i++) {
+      // The last box gives way to the conclusion before the end of the path, however late the box comes.
+      const until = i < stops.length - 1 ? (stops[i] + stops[i + 1]) / 2 : Math.min(stops[i] + DETOUR_TRAIL, (stops[i] + 1) / 2);
+      if (portion < until) return i + 1;
+    }
+    return stops.length + 1;
+  }
+
+  // Which box's explanation shows at a beat (0-based), or -1 for none. The last box keeps its explanation
+  // through the conclusion, until the page changes.
+  const explainedDetour = (beat, count) => beat < 1 ? -1 : Math.min(beat, count) - 1;
+
+  const api = Object.freeze({ journeyState, coverage, detourBeat, explainedDetour });
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.ResearchJourney = api;
 })(typeof window === 'undefined' ? globalThis : window);

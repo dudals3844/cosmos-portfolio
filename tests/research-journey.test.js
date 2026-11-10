@@ -87,3 +87,47 @@ test('coverage is zero when the viewport has no height', () => {
   assert.equal(journey.coverage(0, 100, 0), 0);
   assert.equal(journey.coverage(NaN, NaN, 900), 0);
 });
+
+// Page 2: as the signal runs along the detour, each box's explanation shows while the signal is at that box.
+// Beats: 0 intro, 1..n one per box, n + 1 the conclusion.
+const STOPS = Object.freeze([.2, .5, .8]);
+
+test('the intro shows before the signal reaches the first box', () => {
+  assert.equal(journey.detourBeat(0, STOPS), 0);
+  assert.equal(journey.detourBeat(.05, STOPS), 0);
+});
+
+test('each box explains itself while the signal is at it, and gives way before the next box', () => {
+  assert.equal(journey.detourBeat(.2, STOPS), 1);
+  assert.equal(journey.detourBeat(.34, STOPS), 1);
+  assert.equal(journey.detourBeat(.36, STOPS), 2);
+  assert.equal(journey.detourBeat(.5, STOPS), 2);
+  assert.equal(journey.detourBeat(.8, STOPS), 3);
+});
+
+test('the conclusion follows once the signal has left the last box', () => {
+  assert.equal(journey.detourBeat(.95, STOPS), 4);
+  assert.equal(journey.detourBeat(1, STOPS), 4);
+});
+
+test('the beat only moves forward as the signal moves forward', () => {
+  let last = 0;
+  for (let portion = 0; portion <= 1; portion += .01) {
+    const beat = journey.detourBeat(portion, STOPS);
+    assert.ok(beat >= last, `went back at ${portion.toFixed(2)}`);
+    last = beat;
+  }
+});
+
+test('the conclusion still shows when the last box sits near the end of the detour', () => {
+  assert.equal(journey.detourBeat(.98, [.2, .5, .93]), 4);
+  assert.equal(journey.detourBeat(.93, [.2, .5, .93]), 3);
+});
+
+test('each box explains itself in turn, and the last explanation stays up through the conclusion', () => {
+  assert.equal(journey.explainedDetour(0, 3), -1, 'nothing during the intro');
+  assert.equal(journey.explainedDetour(1, 3), 0);
+  assert.equal(journey.explainedDetour(2, 3), 1);
+  assert.equal(journey.explainedDetour(3, 3), 2);
+  assert.equal(journey.explainedDetour(4, 3), 2, 'the last one stays with the conclusion');
+});

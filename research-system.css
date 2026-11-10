@@ -363,6 +363,20 @@ body.motion-paused .decision-hub rect{animation:none}
 .case-demo.is-paused .story-packet{display:none}
 .case-caption{max-width:1100px;width:100%;margin:0 auto;text-align:center;min-height:50px;display:grid;align-items:center}
 .case-caption p{font-size:16px;line-height:1.85;color:#b8c9c9;word-break:keep-all}
+/* Page 2: the three ways the Agent went off the path, numbered like the detour boxes in the graph.
+   research-case.js shows one sentence at a time as the signal passes each box; the still version shows them all. */
+.case-detours p{margin:0}
+.case-detours .case-issue{color:#e3bfa9}
+/* Each detour box appears when the signal reaches it and then stays; only its explanation comes and goes. */
+.story-detour{transition:opacity .5s}
+.case-demo:not(.is-static) .story-detour.is-waiting{opacity:0}
+.story-detour.is-current>rect{stroke:#f0b48f;fill:#4a2f27}
+/* The explanation sits beside its box only while the signal is at that box. */
+.story-detour .story-detour-explain{opacity:0;transition:opacity .4s}
+.story-detour.is-current .story-detour-explain{opacity:1}
+/* Plain text, outlined in the page colour so it stays readable where it crosses the dashed path. */
+.story-detour .story-detour-explain text{font-size:19px;fill:#f6e3d4;stroke:#0d141b;stroke-width:6px;stroke-linejoin:round;paint-order:stroke}
+.case-demo.is-static .story-detour-explain{display:none}
 .case-scroll-guide{display:flex;justify-content:center;align-items:center;gap:18px;font-size:10px;letter-spacing:.5px;color:#80977c}
 .case-scroll-guide>span:last-child{font-size:20px;color:#bad0a6}
 .case-demo.is-static>.paper-hole,html:not(.js) .case-demo>.paper-hole{margin:0}html:not(.js) .case-pin{position:relative}
