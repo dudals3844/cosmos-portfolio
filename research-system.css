@@ -304,7 +304,6 @@ body.motion-paused .decision-hub rect{animation:none}
 
 /* Personal problem-solving context before the technical architecture. */
 .research-case{max-width:1240px;margin:0 auto;padding:30px 5vw 110px;scroll-margin-top:125px}
-.research-case h3{font-size:clamp(25px,2.6vw,38px);font-weight:400;line-height:1.6;letter-spacing:-1px;margin:0 0 28px;word-break:keep-all}
 .human-review-boundary{border-left:2px solid #b5cc9e;padding:5px 0 5px 16px;margin:22px 0}
 .human-review-boundary>strong{display:block;font-size:14px;font-weight:500;color:#d2e4c8;margin-bottom:8px}
 .human-review-boundary>p{font-size:14px;line-height:1.95;color:#bdc9c8}
@@ -315,12 +314,17 @@ body.motion-paused .decision-hub rect{animation:none}
 
 /* Each chapter of the case follows page scroll, rather than a timed slideshow. */
 .research-case{max-width:none;padding:45px 0 70px}
-.research-case>.eyebrow,.research-case>h3,.research-case>.system-enter{max-width:1200px;margin-left:auto;margin-right:auto;width:86%}
-.research-case>.eyebrow{margin-bottom:28px}.research-case>h3{margin-bottom:30px}
-.case-demo{height:700svh;position:relative}
+.research-case>.system-enter{max-width:1200px;margin-left:auto;margin-right:auto;width:86%}
+/* Two phases, the paper scene, one screen for it to scroll away, then three more phases.
+   The space is margin inside a flow root, not padding: the graph only stays pinned within the content box. */
+.case-demo{--case-phase:100svh;position:relative;display:flow-root}
+.case-demo>.paper-hole{margin:calc(var(--case-phase)*2) 0 calc(var(--case-phase)*4)}
+/* The graph fades out as the paper scene covers it. */
+.case-pin>*{opacity:var(--case-show,1)}.case-demo.is-covered .case-pin>*{visibility:hidden}
 .case-pin{position:sticky;top:0;height:100svh;padding:105px 6vw 60px;display:flex;flex-direction:column;gap:12px;isolation:isolate;overflow:hidden;background:radial-gradient(ellipse at 55% 50%,#1421299c,transparent 72%),#080c14ed}
 .case-scroll-status{max-width:1320px;width:100%;margin:0 auto;display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;color:#9bb294}
 .case-scroll-count{font-size:12px;color:#c3d8b1}
+.case-demo.is-static .case-scroll-count,html:not(.js) .case-scroll-count{display:none}
 .case-headings{min-height:75px;display:grid;align-items:center;text-align:center}
 .case-headings h4{margin:0;font-size:clamp(24px,2.6vw,39px);font-weight:400;line-height:1.55;letter-spacing:-.6px;color:#e3ecd9;word-break:keep-all}
 .case-headings [hidden],.case-caption [hidden]{display:none}
@@ -347,27 +351,28 @@ body.motion-paused .decision-hub rect{animation:none}
 .story-boundary-label{font-size:14px;letter-spacing:1px;fill:#9bb88b}
 .story-path-label{font-size:15px;fill:#a2b69a}
 .story-loop{fill:none;stroke:#c49e7f90;stroke-width:1.5;stroke-dasharray:6 5;marker-end:url(#story-arrow)}
-.story-retrieval,.story-measure-edge{stroke:#a9c59a90}
-.story-rag-node rect,.story-mcp-node rect{stroke:#b3d191;fill:#20372b}
+.story-measure-edge{stroke:#a9c59a90}
+.story-mcp-node rect{stroke:#b3d191;fill:#20372b}
 .story-human-node rect{stroke:#d2c7a0;fill:#302f24}
 .story-signal{fill:#edf9d8;filter:drop-shadow(0 0 7px #d0efab)}
 .story-signal-halo{fill:#cae8a02b}
 .case-demo[data-phase="1"] .story-signal{fill:#f5b08c;filter:drop-shadow(0 0 7px #e68d63)}
 .case-demo[data-phase="1"] .story-signal-halo{fill:#df9c7335}
 .story-packet{fill:#b9e694;filter:drop-shadow(0 0 5px #b3da90);display:none}
-.case-demo[data-phase="2"] .story-rag-packet,.case-demo[data-phase="3"] .story-branch-packet,.case-demo[data-phase="4"] .story-mcp-packet{display:block}
+.case-demo[data-phase="3"] .story-mcp-packet{display:block}
+.case-demo.is-paused .story-packet{display:none}
 .case-caption{max-width:1100px;width:100%;margin:0 auto;text-align:center;min-height:50px;display:grid;align-items:center}
 .case-caption p{font-size:16px;line-height:1.85;color:#b8c9c9;word-break:keep-all}
 .case-scroll-guide{display:flex;justify-content:center;align-items:center;gap:18px;font-size:10px;letter-spacing:.5px;color:#80977c}
 .case-scroll-guide>span:last-child{font-size:20px;color:#bad0a6}
-.case-demo.is-paused .story-packet{display:none}
-.case-demo.is-static{height:auto}.case-demo.is-static .case-pin{position:relative;height:auto;min-height:100svh;overflow:visible}
+.case-demo.is-static>.paper-hole,html:not(.js) .case-demo>.paper-hole{margin:0}html:not(.js) .case-pin{position:relative}
+.case-demo.is-static .case-pin{position:relative;height:auto;min-height:100svh;overflow:visible}
 .case-demo.is-static .case-headings{display:block}.case-demo.is-static .case-headings h4{font-size:22px;margin:15px 0}
 .case-demo.is-static .case-viewport{flex:none;min-height:400px}.case-demo.is-static .story-graph{height:600px}
 .case-demo.is-static .case-caption p{margin:10px 0}.case-demo.is-static .case-scroll-guide,.case-demo.is-static .story-signal,.case-demo.is-static .story-signal-halo{display:none}
 @media(max-width:760px){
- .research-case{padding:25px 0 70px}.research-case>.eyebrow,.research-case>h3,.research-case>.system-enter{width:82%}
- .case-demo{height:700svh}.case-pin{padding:92px 6vw 55px;gap:13px}
+ .research-case{padding:25px 0 70px}.research-case>.system-enter{width:82%}
+ .case-pin{padding:92px 6vw 55px;gap:13px}
  .case-scroll-status{font-size:8px}.case-scroll-count{font-size:10px}
  .case-headings{min-height:90px}.case-headings h4{font-size:24px;line-height:1.6;letter-spacing:-.7px}
  .case-viewport{max-height:55svh;touch-action:pan-x pan-y}
@@ -380,8 +385,6 @@ body.motion-paused .decision-hub rect{animation:none}
 
 .story-infra{fill:#142329;stroke:#82978780;stroke-width:1}
 .story-infra-label{font-size:17px;fill:#a8bec0}
-.case-demo[data-phase="5"] .story-infra{stroke:#c0d9a4;fill:#20332b}
-.case-demo[data-phase="5"] .story-record-feedback{stroke:#c0d9a4}
 .research-story-sources{margin-top:0}
 
 /* Four core stages; show supporting exchanges only when that stage is in focus. */
@@ -389,15 +392,14 @@ body.motion-paused .decision-hub rect{animation:none}
 .story-workflow-map .story-node .story-sub{font-size:15px;font-weight:400}
 .story-mainline{fill:none;stroke:#9eb99165;stroke-width:3;marker-end:url(#story-arrow)}
 .story-workflow-map .story-edge{stroke-width:2}
-.story-agent-node,.story-rag-labels,.story-retrieval,.story-mcp-node,.story-mcp-labels,.story-measure-edge,.story-repair,.story-work-note,.story-operations{display:none}
-.case-demo[data-phase="2"] .story-agent-node,.case-demo[data-phase="2"] .story-rag-labels,.case-demo[data-phase="2"] .story-retrieval{display:block}
-.case-demo[data-phase="3"] .story-work-note{display:block}
-.case-demo[data-phase="4"] .story-mcp-node,.case-demo[data-phase="4"] .story-mcp-labels,.case-demo[data-phase="4"] .story-measure-edge,.case-demo[data-phase="4"] .story-repair{display:block}
-.case-demo[data-phase="5"] .story-operations{display:block}
+.story-mcp-node,.story-mcp-labels,.story-measure-edge,.story-repair,.story-work-note,.story-operations{display:none}
+.case-demo[data-phase="2"] .story-work-note{display:block}
+.case-demo[data-phase="3"] .story-mcp-node,.case-demo[data-phase="3"] .story-mcp-labels,.case-demo[data-phase="3"] .story-measure-edge,.case-demo[data-phase="3"] .story-repair{display:block}
+.case-demo[data-phase="4"] .story-operations{display:block}
 .story-work-note{font-size:19px;fill:#b3c6a7}
 .story-approval-label{font-size:17px;fill:#d6ccaa}
 .story-workflow-map .story-node{opacity:.42;transition:opacity .35s}
-.case-demo[data-phase="2"] .story-search-node,.case-demo[data-phase="2"] .story-agent-node,.case-demo[data-phase="3"] .story-search-node,.case-demo[data-phase="3"] .story-build-node,.case-demo[data-phase="4"] .story-build-node,.case-demo[data-phase="4"] .story-evaluate-node,.case-demo[data-phase="4"] .story-mcp-node,.case-demo[data-phase="5"] .story-evaluate-node,.case-demo[data-phase="5"] .story-record-node,.case-demo.is-static .story-workflow-map .story-node{opacity:1}
+.case-demo[data-phase="2"] .story-search-node,.case-demo[data-phase="2"] .story-build-node,.case-demo[data-phase="3"] .story-build-node,.case-demo[data-phase="3"] .story-evaluate-node,.case-demo[data-phase="3"] .story-mcp-node,.case-demo[data-phase="4"] .story-evaluate-node,.case-demo[data-phase="4"] .story-record-node,.case-demo.is-static .story-workflow-map .story-node{opacity:1}
 .case-demo.is-static .story-operations{display:block}
 @media(prefers-reduced-motion:reduce){.story-workflow-map .story-node{transition:none}}
 
@@ -412,16 +414,3 @@ body.motion-paused .decision-hub rect{animation:none}
 .story-workflow-map .story-node.is-current rect{fill:#284334;stroke:#d7ecbc}
 .story-workflow-map .story-node.is-current text{fill:#e3f2d8}
 .story-workflow-map .story-node.is-current .story-sub{fill:#b1c5b0}
-/* Retrieval scene: papers fall into the RAG index. */
-.story-blackhole{display:none}
-.case-demo[data-phase="2"] .story-blackhole{display:block;animation:story-bh-in .9s ease-out}
-.story-bh-glow{fill:url(#story-bh-glow);animation:story-bh-pulse 3.2s ease-in-out infinite alternate}
-.story-bh-ring{fill:none;stroke:#ffdca8;stroke-width:2.5;filter:drop-shadow(0 0 6px #ffb869)}
-.story-bh-core{fill:#02040a}
-.story-bh-disk{fill:none;stroke:#ffe9c4;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px #ffb869)}
-.story-papers path{fill:#e6ecdc;stroke:#101a22;stroke-width:.9;stroke-linejoin:round}
-.story-blackhole text{paint-order:stroke;stroke:#080c14;stroke-width:5px;stroke-linejoin:round}
-.story-rag-explain text{font-size:17px;fill:#a9bda3}
-.story-rag-explain .story-rag-term{font-size:23px;font-weight:600;fill:#e3f2d8}
-@keyframes story-bh-in{from{opacity:0}}
-@keyframes story-bh-pulse{from{opacity:.7}}
