@@ -2,7 +2,7 @@
 .system-chapter{display:block;padding:0;min-height:0}
 .system-intro{max-width:1240px;margin:auto;padding:150px 5vw 95px;min-height:72svh;display:flex;flex-direction:column;justify-content:center}
 .system-intro h2{font-size:clamp(27px,3vw,46px);font-weight:300;line-height:1.55;letter-spacing:-1.6px;margin-bottom:25px}
-.system-intro>p{font-size:15px;color:#acb9c2;line-height:2.1}
+.system-intro>p{font-size:17px;color:#acb9c2;line-height:2.1}
 .system-enter{display:inline-flex;align-items:center;gap:30px;align-self:flex-start;font-size:11px;color:#b5caaa;margin-top:30px}
 .system-enter>span{font-size:22px}
 .system-sequence{position:relative;height:370svh}
@@ -58,7 +58,7 @@
 .system-panel.is-active{animation:rs-panel-in .45s ease both}
 .system-kicker{display:block;font-size:9px;letter-spacing:2px;color:#a8c7a0;margin-bottom:21px}
 .system-panel h3{font-size:clamp(21px,2.05vw,32px);font-weight:300;line-height:1.65;letter-spacing:-1.1px;word-break:keep-all;color:#e1e9de;margin:0 0 20px}
-.system-panel .system-copy{font-size:13px;line-height:2.1;color:#aebbc4;word-break:keep-all}
+.system-panel .system-copy{font-size:15px;line-height:2.1;color:#aebbc4;word-break:keep-all}
 .system-tools{display:flex;flex-wrap:wrap;gap:7px;margin-top:24px}
 .system-tools>span{border:1px solid #b5c9ad38;background:#b0c49e06;font-size:9px;letter-spacing:.2px;padding:6px 9px;color:#b3c9aa}
 .system-panel details{border-top:1px solid #bbcdb125;margin-top:27px;padding-top:15px}
@@ -80,11 +80,11 @@
 @keyframes rs-panel-in{from{opacity:0;transform:translateY(15px)}to{opacity:1;transform:translateY(0)}}
 body.motion-paused .rs-wire{animation:none}
 body.motion-paused .system-panel{animation:none}
-@media(max-width:1050px){.system-body{gap:3vw;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}.system-panel h3{font-size:23px}.system-pin{padding-left:5vw;padding-right:5vw}.system-panel .system-copy{font-size:12px}}
+@media(max-width:1050px){.system-body{gap:3vw;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}.system-panel h3{font-size:23px}.system-pin{padding-left:5vw;padding-right:5vw}.system-panel .system-copy{font-size:13.5px}}
 @media(max-width:760px){
  .system-intro{padding:115px 9vw 75px;min-height:80svh}
  .system-intro h2{font-size:29px;letter-spacing:-1.4px;line-height:1.55}
- .system-intro>p{font-size:12px;line-height:2.1}
+ .system-intro>p{font-size:13.5px;line-height:2.1}
  .system-intro>p br{display:none}
  .system-enter{font-size:10px}
  .system-sequence{height:360svh}
@@ -104,7 +104,7 @@ body.motion-paused .system-panel{animation:none}
  .system-panels{width:100%}
  .system-kicker{font-size:7px;margin-bottom:8px}
  .system-panel h3{font-size:22px;margin-bottom:10px;line-height:1.5;letter-spacing:-.7px}
- .system-panel .system-copy{font-size:12px;line-height:1.9}
+ .system-panel .system-copy{font-size:13.5px;line-height:1.9}
  .system-tools{margin-top:13px;gap:5px}
  .system-tools>span{font-size:8px;padding:4px 7px}
  .system-panel details{margin-top:15px;padding-top:10px}
@@ -243,7 +243,7 @@ html:not(.js) .automation-chapter .system-sequence,body.motion-paused .automatio
 .role-model-examples dt{font-size:11px;line-height:1.8;color:#9eafa5}
 .role-model-examples dd{font-size:12px;font-weight:500;line-height:1.8;color:#d0ddcd;margin:0}
 #automation-stage-4 h3{font-size:clamp(21px,1.8vw,28px);margin-bottom:13px}
-#automation-stage-4 .system-copy{font-size:12px;line-height:1.9}
+#automation-stage-4 .system-copy{font-size:14px;line-height:1.9}
 #automation-stage-4 .model-routes{margin-top:17px;padding-top:11px}
 @media(max-width:760px){
  .token-scale-statement{gap:8px;margin:1px 0 12px}
@@ -257,7 +257,7 @@ html:not(.js) .automation-chapter .system-sequence,body.motion-paused .automatio
  .role-model-examples dt{font-size:10px}
  .role-model-examples dd{font-size:11px}
  #automation-stage-4 h3{font-size:21px;line-height:1.5}
- #automation-stage-4 .system-copy{font-size:11px}
+ #automation-stage-4 .system-copy{font-size:13.5px}
 }
 
 .decision-demo{display:none}
@@ -306,10 +306,10 @@ body.motion-paused .decision-hub rect{animation:none}
 .research-case{max-width:1240px;margin:0 auto;padding:30px 5vw 110px;scroll-margin-top:125px}
 .human-review-boundary{border-left:2px solid #b5cc9e;padding:5px 0 5px 16px;margin:22px 0}
 .human-review-boundary>strong{display:block;font-size:14px;font-weight:500;color:#d2e4c8;margin-bottom:8px}
-.human-review-boundary>p{font-size:14px;line-height:1.95;color:#bdc9c8}
+.human-review-boundary>p{font-size:16px;line-height:1.95;color:#bdc9c8}
 @media(max-width:760px){
  .research-case{padding:20px 9vw 75px;scroll-margin-top:105px}
- .human-review-boundary>p{font-size:13px}
+ .human-review-boundary>p{font-size:13.5px}
 }
 
 /* Each chapter of the case follows page scroll, rather than a timed slideshow. */

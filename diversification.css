@@ -5,7 +5,7 @@
 .mix-eyebrow{display:flex;justify-content:space-between;align-items:center;gap:20px;font-size:8px;letter-spacing:1.6px;color:#9cb99c}
 .mix-eyebrow>span:last-child{font-size:9px;color:#859896;letter-spacing:.4px;white-space:nowrap}
 .mix-pin>h2{font-size:clamp(26px,2.7vw,42px);line-height:1.45;letter-spacing:-1.6px;font-weight:300;margin:2px 0 0}
-.mix-intro{font-size:13px;color:#a5b5bf;line-height:1.9}
+.mix-intro{font-size:15px;color:#a5b5bf;line-height:1.9}
 .mix-steps{display:flex;align-items:center;gap:24px;flex-shrink:0;border-top:1px solid #b6cda425;border-bottom:1px solid #b6cda425;padding:12px 0;margin-top:4px}
 .mix-steps button{font:inherit;font-size:11px;font-weight:400;color:#7e969b;background:none;border:0;padding:4px 0;cursor:pointer;display:flex;gap:11px;align-items:center}
 .mix-steps button span{font-size:8px;letter-spacing:1px;color:#6b8383}
@@ -36,7 +36,7 @@
 .mix-copy article{animation:mix-copy-in .45s ease both}
 .mix-kicker{display:block;font-size:8px;letter-spacing:1.6px;color:#a9c59d;margin-bottom:19px}
 .mix-copy h3{font-size:clamp(21px,2vw,29px);font-weight:300;line-height:1.6;letter-spacing:-.9px;margin:0 0 20px;color:#e0ebd9;word-break:keep-all}
-.mix-copy p{font-size:12px;line-height:2.1;word-break:keep-all;color:#aab8c1}
+.mix-copy p{font-size:14px;line-height:2.1;word-break:keep-all;color:#aab8c1}
 .mix-mini-stat{margin-top:30px;padding-top:18px;border-top:1px solid #bdd3b02c;display:flex;align-items:baseline;gap:20px}
 .mix-mini-stat>span{font-size:10px;color:#8a9c98}.mix-mini-stat strong{font-size:41px;color:#c9dfb9;font-weight:300}.mix-mini-stat strong span{font-size:15px;margin-left:4px}
 .mix-correlation{margin-top:22px}
@@ -72,7 +72,7 @@
  .mix-eyebrow{font-size:6px;letter-spacing:.6px;gap:12px}
  .mix-eyebrow>span:last-child{font-size:7px}
  .mix-pin>h2{font-size:26px;letter-spacing:-1.3px;line-height:1.5}
- .mix-intro{font-size:11px;line-height:1.9}
+ .mix-intro{font-size:13.5px;line-height:1.9}
  .mix-steps{justify-content:space-between;gap:7px;padding:9px 0;margin:0}
  .mix-steps button{font-size:9px;gap:5px}.mix-steps button span{font-size:7px}.mix-steps i{font-size:8px}
  .mix-body{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:17px;flex:none;margin:0}
@@ -81,7 +81,7 @@
  .mix-legend{font-size:7px;gap:10px;margin-top:7px}
  .mix-copy h3{font-size:21px;margin-bottom:11px;line-height:1.5}
  .mix-copy h3 br{display:none}
- .mix-copy p{font-size:11px;line-height:1.9}
+ .mix-copy p{font-size:13.5px;line-height:1.9}
  .mix-kicker{font-size:7px;margin-bottom:8px}
  .mix-mini-stat{margin-top:14px;padding-top:10px}.mix-mini-stat strong{font-size:29px}
  .mix-correlation{margin-top:12px;max-width:290px}.mix-correlation td{height:22px}.mix-correlation caption{font-size:7px}
