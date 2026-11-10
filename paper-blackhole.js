@@ -41,9 +41,10 @@
   const ROLL_SWAY = .35;
   const LABEL_FLIP = .72;
   const SHADOW_EDGE = 1.02, SHADOW_SOFT = .12;
-  const HALO_FLOOR = .38, HALO_TOP = 1.4;
+  // The bowl under the hole is a little dimmer than the arch over it.
+  const LOWER_LIGHT = .8;
   // The near half of the accretion disk is drawn larger and brighter than the far half.
-  const DISK_DEPTH = .3;
+  const DISK_DEPTH = .5;
   const TWINKLE_FLOOR = .78, TWINKLE_RATE = 1.7;
   const BLOOM_SIZE = '7.0', BLOOM_GAIN = '0.07';
   const KIND = { ring: 0, halo: 1, disk: 2, swirl: 3 };
@@ -120,7 +121,7 @@
   const normal = () => Math.sqrt(-2 * Math.log(Math.max(1e-5, random()))) * Math.cos(TAU * random());
   const floats = () => new Float32Array(TOTAL);
   const P = {
-    owner: new Int16Array(TOTAL), kind: new Uint8Array(TOTAL),
+    owner: new Int16Array(TOTAL), kind: new Uint8Array(TOTAL), lower: new Uint8Array(TOTAL),
     offX: floats(), offY: floats(), fan: floats(), drift: floats(), jitter: floats(),
     swirlR: floats(), swirlLift: floats(), theta: floats(), order: floats(), fall: floats(),
     shapeR: floats(), shapeTilt: floats(), shapeRoll: floats(), shapeLift: floats(),
@@ -143,10 +144,10 @@
   const sheet = orbit.paperOutline(POINTS_PER_PAPER);
   function paintShape(i, shape) {
     const heat = shape.heat;
-    P.kind[i] = KIND[shape.kind];
+    P.kind[i] = KIND[shape.kind]; P.lower[i] = shape.lower ? 1 : 0;
     P.shapeR[i] = shape.radius; P.shapeTilt[i] = shape.tilt; P.shapeRoll[i] = shape.roll; P.shapeLift[i] = shape.lift;
     const palette = {
-      ring: { cool: [1, .94, .82], warm: [1, .94, .82], light: .34, glow: .9, size: 1.5 },
+      ring: { cool: [1, .94, .82], warm: [1, .94, .82], light: .22, glow: .6, size: 1.2 },
       halo: { cool: [1, .7, .4], warm: [1, .9, .72], light: .12 + .38 * heat, glow: .45 + .5 * heat, size: 1.3 + heat },
       disk: { cool: [1, .55, .25], warm: [1, .93, .8], light: .2 + .34 * heat, glow: .25 + .75 * heat, size: 1.3 + heat * 1.1 },
       swirl: { cool: [.5, .62, .95], warm: [.62, .72, 1], light: .3 + heat, glow: .04, size: 1.2 },
@@ -259,15 +260,23 @@
       // The slant is small enough to treat cos(roll) as 1 and sin(roll) as roll.
       const roll = mix(orbit.DISK_ROLL, P.shapeRoll[i], blend);
       const flatX = radius * cos, flatY = radius * sin * tilt + lift;
-      const x = view.x + flatX - flatY * roll + offsetX, y = view.y + flatX * roll + flatY + offsetY;
+      let x = view.x + flatX - flatY * roll + offsetX, y = view.y + flatX * roll + flatY + offsetY;
+      let lensLight = 1;
+      if (P.kind[i] === KIND.halo && blend > 0) {
+        // Settling halo points slide from their orbit onto the lensed arch (or bowl), which leans with the disk.
+        const lens = orbit.lensPoint(P.shapeR[i], P.lower[i] === 1, theta);
+        const lx = lens.x * view.hole, ly = lens.y * view.hole;
+        x = mix(x, view.x + lx - ly * orbit.DISK_ROLL, blend);
+        y = mix(y, view.y + lx * orbit.DISK_ROLL + ly, blend);
+        lensLight = lens.light * (P.lower[i] ? LOWER_LIGHT : 1);
+      }
       let light = TWINKLE_FLOOR + (1 - TWINKLE_FLOOR) * (.5 + .5 * Math.sin(clock * TWINKLE_RATE + P.phase[i]));
       if (sin < 0 && formed > 0) {
         // The far half of every orbit passes behind the hole.
         const depth = (shadow - Math.hypot(x - view.x, y - view.y)) / shadowSoft;
         if (depth > 0) light *= 1 - formed * Math.min(1, depth);
       }
-      // The lensed halo is brightest over the top of the shadow.
-      const hot = blend * (P.kind[i] === KIND.halo ? HALO_FLOOR + (1 - HALO_FLOOR) * ((1 - sin) / 2) ** HALO_TOP : 1);
+      const hot = blend * lensLight;
       const cool = 1 - blend;
       if (P.kind[i] === KIND.disk) light *= 1 + DISK_DEPTH * sin * blend;
       data[o] = x; data[o + 1] = y; data[o + 2] = mix(P.size[i], P.hotSize[i] * (P.kind[i] === KIND.disk ? 1 + DISK_DEPTH * sin : 1), blend);
@@ -324,6 +333,8 @@
       result.style.transform = `translateY(${((1 - shown) * 14).toFixed(1)}px)`;
     });
     const visible = box.top < innerHeight && box.bottom > 0;
+    // paper-escape.js listens for this to fly its ship once the hole has formed.
+    scene.dispatchEvent(new CustomEvent('paper:state', { detail: { ...state, still, visible } }));
     const running = visible && !still && !document.hidden;
     if (running && !frame) { lastFrame = 0; frame = requestAnimationFrame(tick); }
     else if (!running && frame) { cancelAnimationFrame(frame); frame = 0; }

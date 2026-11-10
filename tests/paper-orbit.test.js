@@ -152,11 +152,12 @@ test('the photon ring hugs the shadow and the halo sits outside it', () => {
   assert.ok(haloMin >= ringMax);
 });
 
-test('ring and halo face the viewer while the accretion disk leans its near edge down', () => {
+test('ring and halo face the viewer while the level disk tilts only front to back', () => {
   for (const sample of samples()) {
     if (sample.kind === 'ring' || sample.kind === 'halo') assert.equal(sample.tilt, 1);
-    // Tilted enough to read as a ring in depth, but still clearly a disk seen from the side.
-    if (sample.kind === 'disk') assert.ok(sample.tilt >= .15 && sample.tilt <= .3, `disk tilt ${sample.tilt}`);
+    // A thin band across the shadow, its near edge below the far edge, with no sideways slant.
+    if (sample.kind === 'disk') assert.ok(sample.tilt >= .12 && sample.tilt <= .18, `disk tilt ${sample.tilt}`);
+    if (sample.kind === 'disk' || sample.kind === 'swirl') assert.equal(sample.roll, 0);
   }
 });
 
@@ -169,4 +170,62 @@ test('the finished black hole rests for over a quarter of the scroll before the 
 
   assert.ok(rest >= .25, `rest share ${rest}`);
   assert.equal(orbit.sceneState(orbit.TIMELINE.analysisEnd).analysis, 1);
+});
+
+// The lensed back of the disk, after the reference image: a round arch hugging the top and a bowl underneath.
+const { inner: HALO_IN, width: HALO_W } = orbit.SHAPE.halo;
+const BANDS = [HALO_IN, HALO_IN + HALO_W / 2, HALO_IN + HALO_W];
+const lensSweep = (band, lower) => Array.from({ length: 181 }, (_, i) => orbit.lensPoint(band, lower, i / 180 * Math.PI));
+const width = points => Math.max(...points.map(p => p.x)) - Math.min(...points.map(p => p.x));
+const height = points => Math.max(...points.map(p => Math.abs(p.y)));
+
+test('the upper arch sits above the shadow and the lower bowl below it', () => {
+  for (const band of BANDS) {
+    assert.ok(lensSweep(band, false).every(p => p.y <= 0));
+    assert.ok(lensSweep(band, true).every(p => p.y >= 0));
+  }
+});
+
+test('lensed light never falls inside the shadow', () => {
+  for (const band of BANDS) {
+    for (const lower of [false, true]) {
+      for (const p of lensSweep(band, lower)) assert.ok(Math.hypot(p.x, p.y) > 1.02, `band ${band} at ${p.x},${p.y}`);
+    }
+  }
+});
+
+test('the halo hugs the shadow closely instead of spreading out', () => {
+  assert.ok(HALO_IN + HALO_W <= 2, `outer band ${HALO_IN + HALO_W}`);
+  for (const band of BANDS) {
+    const arch = lensSweep(band, false);
+    assert.ok(height(arch) < 1.8, `arch height ${height(arch)}`);
+    assert.ok(width(arch) / height(arch) < 2.8, 'arch stays nearly round');
+  }
+});
+
+test('the arch flares a little at its base, and the bowl is a bit narrower', () => {
+  const outer = HALO_IN + HALO_W, arch = lensSweep(outer, false), bowl = lensSweep(outer, true);
+
+  assert.ok(width(arch) / height(arch) > 2.2, 'flared base');
+  assert.ok(width(bowl) < width(arch) * .85);
+  assert.ok(height(bowl) > height(arch) * .8, 'bowl about as deep as the arch is tall');
+});
+
+test('the outer swirl stays close to the disk instead of filling the sky', () => {
+  const swirl = samples().filter(sample => sample.kind === 'swirl');
+  assert.ok(Math.max(...swirl.map(sample => sample.radius)) <= 5);
+  assert.ok(swirl.every(sample => sample.tilt <= .2));
+});
+
+test('the arch fades out where it meets the disk, so wrapping round is invisible', () => {
+  assert.ok(orbit.lensPoint(3, false, 0).light < .05);
+  assert.ok(orbit.lensPoint(3, false, Math.PI / 2).light > .9);
+  assert.ok(Math.abs(orbit.lensPoint(3, false, 0).y) < .01);
+});
+
+test('halo particles are split between the arch and the bowl', () => {
+  const halo = samples().filter(sample => sample.kind === 'halo');
+  const lower = halo.filter(sample => sample.lower).length / halo.length;
+
+  assert.ok(lower > .2 && lower < .4, `lower share ${lower}`);
 });

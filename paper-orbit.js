@@ -16,16 +16,17 @@
   const MAX_ANGULAR_SPEED = 1.1;
   const KEPLER_EXPONENT = 1.5;
   const PAPER = Object.freeze({ halfWidth: .5, halfHeight: .7, outlineShare: .52, textLines: 6, textHalfWidth: .32, textHalfHeight: .44 });
-  // Slight slant of the disk axis, in radians (about 8 degrees, as in the reference image).
-  const DISK_ROLL = -.14;
+  // Sideways slant of the disk axis, in radians. Kept at zero so the disk stays level.
+  const DISK_ROLL = 0;
   // The black hole in units of its shadow radius, after the reference image:
   // a thin photon ring, a lensed halo, an accretion disk and a faint outer swirl.
-  // The disk leans its near edge down a little, so it reads as a ring in depth rather than a flat line.
+  // The disk is a thin, level band across the shadow, tilted only front to back so its near edge sits below the far edge.
   const SHAPE = Object.freeze({
-    ring: Object.freeze({ share: .12, inner: 1.03, width: .04 }),
-    halo: Object.freeze({ share: .38, inner: 1.08, width: .8, falloff: 2.2 }),
-    disk: Object.freeze({ share: .28, inner: 1.4, width: 4.2, falloff: 1.25, tilt: .2, thickness: .02, bandSpacing: .62, bandDepth: .07 }),
-    swirl: Object.freeze({ inner: 2, width: 5.5, falloff: .8, tilt: .9, thickness: .12, heat: .15 }),
+    ring: Object.freeze({ share: .05, inner: 1.03, width: .03 }),
+    // The halo is the far side of the disk bent round the shadow: bands from `inner` out to `inner + width`.
+    halo: Object.freeze({ share: .45, inner: 1.08, width: .75, falloff: 1.15, lowerShare: .3, outerHeat: .7 }),
+    disk: Object.freeze({ share: .28, inner: 1.4, width: 3, falloff: 1.25, tilt: .14, thickness: .02, bandSpacing: .62, bandDepth: .07 }),
+    swirl: Object.freeze({ inner: 1.8, width: 3, falloff: .8, tilt: .18, thickness: .12, heat: .15 }),
   });
 
   const clamp01 = value => Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : 0;
@@ -101,7 +102,9 @@
     }
     if (pick < ring.share + halo.share) {
       const depth = spread ** halo.falloff;
-      return { kind: 'halo', radius: halo.inner + depth * halo.width, tilt: 1, roll: 0, lift: 0, heat: 1 - depth };
+      // `offset` is uniform on -0.5..0.5, so this sends lowerShare of the halo to the bowl underneath.
+      const lower = offset < halo.lowerShare - .5;
+      return { kind: 'halo', radius: halo.inner + depth * halo.width, tilt: 1, roll: 0, lift: 0, heat: 1 - (1 - halo.outerHeat) * depth, lower };
     }
     if (pick < ring.share + halo.share + disk.share) {
       const depth = spread ** disk.falloff;
@@ -114,7 +117,28 @@
     return { kind: 'swirl', radius: swirl.inner + depth * swirl.width, tilt: swirl.tilt, roll: DISK_ROLL, lift: offset * swirl.thickness, heat: swirl.heat * (1 - depth) };
   }
 
-  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape });
+  // Lensing, after the reference image. Light from behind the hole wraps over the top as a nearly round arch
+  // that flares a little where it meets the disk, and under the bottom as a slightly narrower bowl. `angle` runs along the arch.
+  const LENS = Object.freeze({
+    upper: Object.freeze({ widen: .15, rise: 1.12, riseGrowth: .75, flare: .5 }),
+    lower: Object.freeze({ reach: 1.06, reachGrowth: .65, depth: 1.12, depthGrowth: .55 }),
+    fade: .35,
+  });
+  function lensPoint(band, lower, angle) {
+    const along = ((angle % Math.PI) + Math.PI) % Math.PI;
+    const out = band - SHAPE.halo.inner;
+    const sin = Math.sin(along), cos = Math.cos(along);
+    const light = sin ** LENS.fade;
+    if (lower) {
+      const { reach, reachGrowth, depth, depthGrowth } = LENS.lower;
+      return { x: (reach + reachGrowth * out) * cos, y: (depth + depthGrowth * out) * sin, light };
+    }
+    const { widen, rise, riseGrowth, flare } = LENS.upper;
+    const share = clamp01(out / SHAPE.halo.width);
+    return { x: band * (1 + widen * share) * cos, y: -(rise + riseGrowth * out) * sin ** (1 + flare * share), light };
+  }
+
+  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape, lensPoint });
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PaperOrbit = api;
 })(typeof window === 'undefined' ? globalThis : window);

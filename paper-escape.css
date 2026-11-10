@@ -1,0 +1,39 @@
+/* A cartoon wheel ship is dragged to the edge of the finished black hole and escapes, framed like a short film. */
+.escape-layer{position:absolute;inset:0;z-index:2;pointer-events:none}
+.escape-trail{position:absolute;inset:0;width:100%;height:100%}
+.escape-ship{position:absolute;left:0;top:0;width:72px;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 0 10px #ffd9a055)}
+.escape-ship svg{display:block;width:100%;height:auto;overflow:visible}
+.escape-drop{position:absolute;left:0;top:0;width:41px;opacity:0;will-change:transform,opacity;filter:drop-shadow(0 0 8px #ffd9a044)}
+.escape-drop svg{display:block;width:100%;height:auto;overflow:visible}
+.escape-ship.is-robot-released .escape-docked-robot,.escape-ship.is-cooper-released .escape-docked-cooper{display:none}
+.escape-ship .face-scared,.escape-ship[data-mood="scared"] .face-happy{display:none}
+.escape-ship[data-mood="scared"] .face-scared{display:inline}
+.escape-bubble{position:absolute;left:0;top:0;padding:5px 10px;border-radius:11px;background:#f6f0e1;color:#2c3b44;font-size:11px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .25s;box-shadow:0 4px 14px #05070c88}
+.escape-bubble:after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:2px}
+.escape-bubble.is-shown{opacity:1}
+/* Each speaker has their own bubble colour: Cooper cream, TARS grey, Amelia light sky. */
+.escape-bubble[data-speaker="robot"]{background:#d5dbe1;color:#24303a}
+.escape-bubble[data-speaker="amelia"]{background:#cde9f7;color:#1f3a4a}
+
+/* Letterbox bars slide in while the scene plays; the ending caption pops up where the play button sits. */
+.escape-bar{position:absolute;left:0;right:0;height:7svh;z-index:3;background:#000;pointer-events:none;transition:transform .7s cubic-bezier(.6,0,.2,1)}
+.escape-bar-top{top:0;transform:translateY(-100%)}
+.escape-bar-bottom{bottom:0;transform:translateY(100%)}
+.paper-hole.is-escaping .escape-bar{transform:none}
+.escape-caption{position:absolute;z-index:3;left:50%;bottom:56px;transform:translateX(-50%);padding:6px 14px;border-radius:99px;background:#f6f0e1;color:#2c3b44;font-size:12px;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .5s}
+.paper-hole.escape-safe .escape-caption{opacity:1}
+
+.escape-replay{position:absolute;z-index:3;left:50%;bottom:56px;transform:translateX(-50%);padding:8px 16px;border:1px solid #e9dcc055;border-radius:99px;background:#0a0e16d9;color:#e3d9bf;font:inherit;font-size:12px;letter-spacing:.3px;cursor:pointer;opacity:0;pointer-events:none;transition:opacity .4s,border-color .25s}
+.escape-replay:hover,.escape-replay:focus-visible{border-color:#f3e3bf}
+/* An easter egg: the play button only appears when coming back up to the formed black hole from below,
+   and hides while the scene plays. paper-escape.js places it under the evidence pills. */
+.paper-hole.escape-ready.escape-found:not(.is-escaping) .escape-replay{opacity:1;pointer-events:auto}
+
+.paper-hole:is(.is-static,.is-flat) :is(.escape-layer,.escape-bar,.escape-replay,.escape-caption),html:not(.js) :is(.escape-layer,.escape-bar,.escape-replay,.escape-caption){display:none}
+@media(max-width:760px){
+ .escape-ship{width:54px}
+ .escape-drop{width:31px}
+ .escape-bubble{font-size:10px;padding:4px 8px}
+ .escape-caption{bottom:50px;font-size:11px}
+ .escape-replay{bottom:50px;font-size:11px}
+}
