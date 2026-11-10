@@ -1,17 +1,17 @@
 'use strict';
 // A small cartoon wheel ship flies in once the paper black hole has formed and is dragged towards the hole.
 // Its two docked shuttles let go one after the other, TARS first and then Cooper, and fall in (nothing
-// comes back out of a black hole); the lightened wheel ship, with Amelia the Maltese aboard, escapes.
+// comes back out of a black hole); the lightened wheel ship, with Dr. Brand the Maltese aboard, escapes.
 // The path is pure (runs under node --test); the DOM part only runs in the page.
 (() => {
   // Seconds from the start of the scene at which each beat begins or ends, following the script:
-  // approach and pull-in; TASS counts down and lets go on the right of the hole; Amelia says goodbye and
-  // TASS answers as it falls; Cooper agrees; a pause; Cooper gets ready, Amelia asks what he is doing,
+  // approach and pull-in; TARS counts down and lets go on the right of the hole; Dr. Brand says goodbye and
+  // TARS answers as it falls; Cooper agrees; a pause; Cooper gets ready, Dr. Brand asks what he is doing,
   // he answers and lets go in the middle; once both shuttles are gone the lightened wheel ship escapes.
   // Timed at a calm pace, then stretched by SLOW so every beat reads clearly.
   const SLOW = 1.5;
   const DURATION = Object.freeze(Object.fromEntries(Object.entries({
-    approachEnd: 1.6, spiralEnd: 4.2, countdownStart: 4.6, robotRelease: 6.3, tassReplyStart: 8, sureStart: 10,
+    approachEnd: 1.6, spiralEnd: 4.2, countdownStart: 4.6, robotRelease: 6.3, tarsReplyStart: 8, sureStart: 10,
     pauseStart: 11.7, prepStart: 12.5, whatStart: 14.2, honestStart: 15.9, cooperRelease: 17.9,
     holdEnd: 19.8, boostEnd: 20.5, escapeEnd: 22.3, total: 23.8,
   }).map(([key, seconds]) => [key, seconds * SLOW])));
@@ -33,7 +33,7 @@
   // Each shuttle drifts in from where it let go, shrinking, and is lost past the horizon.
   const HORIZON = 1.2, HORIZON_SOFT = .2;
   const SHUTTLE_FALL = Object.freeze({
-    // TASS drifts in slowly so it is still in view while it answers Amelia; Cooper goes quickly.
+    // TARS drifts in slowly so it is still in view while it answers Dr. Brand; Cooper goes quickly.
     robot: Object.freeze({ release: 'robotRelease', seconds: 6 * SLOW, power: 1.5, turn: .8, shrink: .45 }),
     cooper: Object.freeze({ release: 'cooperRelease', seconds: 2.4 * SLOW, power: 1, turn: .3, shrink: .55 }),
   });
@@ -48,9 +48,9 @@
   const span = (t, start, end) => clamp01((t - start) / (end - start));
   const during = (t, start, end) => t >= start && t < end;
 
-  // Lines spoken from the wheel ship: by Amelia, and by TASS and Cooper while they are still docked.
+  // Lines spoken from the wheel ship: by Dr. Brand, and by TARS and Cooper while they are still docked.
   const SHIP_LINES = Object.freeze([
-    ['countdown', 'countdownStart', 'robotRelease'], ['byeTass', 'robotRelease', 'tassReplyStart'],
+    ['countdown', 'countdownStart', 'robotRelease'], ['byeTars', 'robotRelease', 'tarsReplyStart'],
     ['sure', 'sureStart', 'pauseStart'], ['prep', 'prepStart', 'whatStart'],
     ['what', 'whatStart', 'honestStart'], ['honest', 'honestStart', 'cooperRelease'],
   ]);
@@ -122,11 +122,11 @@
   }
   const pose = (t, view) => project(motion, t, view, () => 0);
 
-  // Who says each line. TASS answers Amelia from its shuttle as it falls; Cooper falls without a word.
+  // Who says each line. TARS answers Dr. Brand from its shuttle as it falls; Cooper falls without a word.
   const SPEAKER = Object.freeze({
-    countdown: 'robot', byeTass: 'amelia', tassReply: 'robot', sure: 'cooper', prep: 'cooper', what: 'amelia', honest: 'cooper',
+    countdown: 'robot', byeTars: 'brand', tarsReply: 'robot', sure: 'cooper', prep: 'cooper', what: 'brand', honest: 'cooper',
   });
-  const shuttleLine = (who, t) => who === 'robot' && during(t, DURATION.tassReplyStart, DURATION.sureStart) ? 'tassReply' : null;
+  const shuttleLine = (who, t) => who === 'robot' && during(t, DURATION.tarsReplyStart, DURATION.sureStart) ? 'tarsReply' : null;
   function fallOf(who) {
     const fall = SHUTTLE_FALL[who];
     const at = DURATION[fall.release];
@@ -220,16 +220,16 @@
     <g clip-path="url(#${windowId})"><g transform="translate(-3.4 -3.6) scale(.8)">${occupant}</g></g>
     <ellipse cx="-3.4" cy="-5" rx="6.4" ry="5.6" fill="none" stroke="#2c3b44" stroke-width="1.3"/>
     <path d="M-7 -8.6Q-4.8 -10.2 -2 -10.3" fill="none" stroke="#fff" stroke-width=".9" stroke-linecap="round" opacity=".75"/>`;
-  // Amelia rides in the round hub window of the wheel itself; the two shuttles dock over the hub and leave
+  // Dr. Brand rides in the round hub window of the wheel itself; the two shuttles dock over the hub and leave
   // it in plain view once they have both let go.
   const HUB = `<circle r="9.8" fill="url(#escape-hub)" stroke="#2c3b44" stroke-width="1.5"/><circle r="8" fill="#a7dcf2"/>
-    <g clip-path="url(#escape-window-amelia)"><g transform="scale(.95) translate(0 .6)">${PILOT}</g></g>
+    <g clip-path="url(#escape-window-brand)"><g transform="scale(.95) translate(0 .6)">${PILOT}</g></g>
     <circle r="8" fill="none" stroke="#2c3b44" stroke-width="1.3"/>
     <path d="M-4.8 -4.6Q-2.4 -7 1 -7.2" fill="none" stroke="#fff" stroke-width=".9" stroke-linecap="round" opacity=".7"/>`;
   const DOCKED = Object.freeze({ cooper: 'translate(0 -7) scale(.9)', robot: 'translate(2 8) scale(.85)' });
   const OCCUPANT = Object.freeze({ cooper: ASTRONAUT, robot: ROBOT });
   const SHIP = `<svg viewBox="-38 -32 76 64">
-    <defs><clipPath id="escape-window-amelia"><circle r="8"/></clipPath>
+    <defs><clipPath id="escape-window-brand"><circle r="8"/></clipPath>
       <radialGradient id="escape-hub" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fffdf6"/><stop offset=".6" stop-color="#e6dfcd"/><stop offset="1" stop-color="#a9a190"/></radialGradient></defs>
     <g class="escape-engine"><g class="escape-flame"><path d="M-15 -4.5Q-33 0-15 4.5Z" fill="#ffb05c"/><path d="M-15 -2.5Q-25 0-15 2.5Z" fill="#fff4b8"/></g>
       <rect x="-17" y="-3.6" width="5" height="7.2" rx="1.6" fill="#ff8f7e" stroke="#2c3b44" stroke-width="1.3"/></g>
@@ -251,10 +251,10 @@
     if (!scene) return;
     const stage = scene.querySelector('.paper-stage');
     const pin = scene.querySelector('.paper-pin');
-    // Amelia speaks from the wheel ship, TARS and Cooper from their shuttles.
+    // Dr. Brand speaks from the wheel ship, TARS and Cooper from their shuttles.
     const LINES = Object.freeze({
-      countdown: '3, 2, 1, 분리', byeTass: '굿바이 TASS', tassReply: '굿바이 브랜드 박사님, 반대쪽에서 뵙죠 쿠퍼',
-      sure: '그러자고', prep: '분리준비', what: '쿠퍼 무슨 짓이에요?', honest: '잊었어, 아멜리아? 90%만 솔직하기.',
+      countdown: '3, 2, 1, 분리', byeTars: '굿바이 TARS', tarsReply: '굿바이 브랜드 박사님, 반대쪽에서 뵙죠 쿠퍼',
+      sure: '그러자고', prep: '분리준비', what: '쿠퍼 무슨 짓이에요?', honest: '잊었어, 브랜드 박사? 90%만 솔직하기.',
     });
     const DROP_TUMBLE_DEG_PER_SECOND = 70;
     const TRAIL_LIFE = .9, TRAIL_MAX = 160, TURN_RATE = .25, SHAKE_PX = 4, SPIN_RADIANS_PER_SECOND = .7, ENGINE_BACK = 14;
@@ -263,7 +263,7 @@
     layer.className = 'escape-layer'; layer.setAttribute('aria-hidden', 'true');
     layer.innerHTML = `<canvas class="escape-trail"></canvas>
       ${SHUTTLES.map(who => `<div class="escape-drop" data-who="${who}">${releasedShuttle(who)}</div>`).join('')}
-      <div class="escape-ship" data-mood="happy">${SHIP}</div><span class="escape-bubble escape-bubble-amelia"></span>
+      <div class="escape-ship" data-mood="happy">${SHIP}</div><span class="escape-bubble escape-bubble-brand"></span>
       ${SHUTTLES.map(who => `<span class="escape-bubble escape-bubble-${who}"></span>`).join('')}`;
     ['top', 'bottom'].forEach(side => {
       const bar = document.createElement('div');
@@ -275,7 +275,7 @@
     // The caption takes the play button's spot, which stays empty while the scene plays.
     const caption = document.createElement('span');
     caption.className = 'escape-caption'; caption.setAttribute('aria-hidden', 'true');
-    caption.textContent = '아멜리아는 탈출했고, 쿠퍼와 TARS는 저편으로 ✦';
+    caption.textContent = '브랜드 박사는 탈출했고, 쿠퍼와 TARS는 저편으로 ✦';
     stage.append(layer); pin.append(replay, caption);
 
     const trail = layer.querySelector('canvas');
@@ -308,7 +308,7 @@
     }
     drawWheel(0);
     const flame = layer.querySelector('.escape-flame');
-    const bubble = layer.querySelector('.escape-bubble-amelia');
+    const bubble = layer.querySelector('.escape-bubble-brand');
     const released = Object.fromEntries(SHUTTLES.map(who => [who, {
       craft: layer.querySelector(`.escape-drop[data-who="${who}"]`), bubble: layer.querySelector(`.escape-bubble-${who}`),
     }]));

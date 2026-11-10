@@ -89,14 +89,14 @@ test('the engine is weak while captured and at full power while escaping', () =>
   assert.equal(escaping.shake, 0);
 });
 
-test('Amelia, on the wheel ship, says goodbye to TASS, then asks Cooper what he is doing, and the caption follows', () => {
+test('Dr. Brand, on the wheel ship, says goodbye to TARS, then asks Cooper what he is doing, and the caption follows', () => {
   const lines = [];
   for (const { bubble } of timeline(VIEW, .05)) {
-    const amelia = bubble === 'safe' || escape.SPEAKER[bubble] === 'amelia';
-    if (amelia && lines[lines.length - 1] !== bubble) lines.push(bubble);
+    const brand = bubble === 'safe' || escape.SPEAKER[bubble] === 'brand';
+    if (brand && lines[lines.length - 1] !== bubble) lines.push(bubble);
   }
 
-  assert.deepEqual(lines, ['byeTass', 'what', 'safe']);
+  assert.deepEqual(lines, ['byeTars', 'what', 'safe']);
 });
 
 test('the scene never plays by itself: the button can start it only once the black hole has formed', () => {
@@ -136,7 +136,7 @@ test('spinning the wheel carries each pod round from back to front', () => {
   assert.ok(Math.abs(escape.wheelLayout(.1 + quarter)[0].y - escape.wheelLayout(.1)[1].y) < 1e-9);
 });
 
-// TARS lets go first, then Cooper; both fall into the hole while Amelia's wheel ship escapes.
+// TARS lets go first, then Cooper; both fall into the hole while Dr. Brand's wheel ship escapes.
 const SHUTTLES = ['robot', 'cooper'];
 const releaseTimeline = (who, view = VIEW) => {
   const poses = [];
@@ -193,7 +193,7 @@ test('the dialogue runs in the order of the script, one speaker at a time', () =
     if (lines[0] && spoken[spoken.length - 1] !== lines[0]) spoken.push(lines[0]);
   }
 
-  assert.deepEqual(spoken, ['countdown', 'byeTass', 'tassReply', 'sure', 'prep', 'what', 'honest', 'safe']);
+  assert.deepEqual(spoken, ['countdown', 'byeTars', 'tarsReply', 'sure', 'prep', 'what', 'honest', 'safe']);
 });
 
 test('TARS lets go on the right of the hole and Cooper near the middle, in front of it', () => {
@@ -220,14 +220,14 @@ test('Cooper says his lines from the wheel ship before he lets go, then falls wi
 
 test('every line is credited to the one who says it', () => {
   assert.deepEqual({ ...escape.SPEAKER }, {
-    countdown: 'robot', byeTass: 'amelia', tassReply: 'robot', sure: 'cooper', prep: 'cooper', what: 'amelia', honest: 'cooper',
+    countdown: 'robot', byeTars: 'brand', tarsReply: 'robot', sure: 'cooper', prep: 'cooper', what: 'brand', honest: 'cooper',
   });
 });
 
-test('TASS counts down while docked, lets go on "분리", and answers as it falls', () => {
+test('TARS counts down while docked, lets go on "분리", and answers as it falls', () => {
   const { robotRelease } = escape.DURATION;
   const countdown = timeline(VIEW).filter(pose => pose.bubble === 'countdown');
-  const reply = releaseTimeline('robot').filter(pose => pose.bubble === 'tassReply');
+  const reply = releaseTimeline('robot').filter(pose => pose.bubble === 'tarsReply');
 
   assert.ok(countdown.length && countdown.every(pose => pose.t < robotRelease));
   assert.ok(Math.abs(countdown[countdown.length - 1].t - robotRelease) < .1, 'lets go as the countdown ends');

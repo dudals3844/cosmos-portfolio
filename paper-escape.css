@@ -11,9 +11,9 @@
 .escape-bubble{position:absolute;left:0;top:0;padding:5px 10px;border-radius:11px;background:#f6f0e1;color:#2c3b44;font-size:11px;font-weight:600;white-space:nowrap;opacity:0;transition:opacity .25s;box-shadow:0 4px 14px #05070c88}
 .escape-bubble:after{content:'';position:absolute;left:50%;bottom:-5px;width:10px;height:10px;margin-left:-5px;background:inherit;transform:rotate(45deg);border-radius:2px}
 .escape-bubble.is-shown{opacity:1}
-/* Each speaker has their own bubble colour: Cooper cream, TARS grey, Amelia light sky. */
+/* Each speaker has their own bubble colour: Cooper cream, TARS grey, Dr. Brand light sky. */
 .escape-bubble[data-speaker="robot"]{background:#d5dbe1;color:#24303a}
-.escape-bubble[data-speaker="amelia"]{background:#cde9f7;color:#1f3a4a}
+.escape-bubble[data-speaker="brand"]{background:#cde9f7;color:#1f3a4a}
 
 /* Letterbox bars slide in while the scene plays; the ending caption pops up where the play button sits. */
 .escape-bar{position:absolute;left:0;right:0;height:7svh;z-index:3;background:#000;pointer-events:none;transition:transform .7s cubic-bezier(.6,0,.2,1)}
