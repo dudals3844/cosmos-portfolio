@@ -412,3 +412,16 @@ body.motion-paused .decision-hub rect{animation:none}
 .story-workflow-map .story-node.is-current rect{fill:#284334;stroke:#d7ecbc}
 .story-workflow-map .story-node.is-current text{fill:#e3f2d8}
 .story-workflow-map .story-node.is-current .story-sub{fill:#b1c5b0}
+/* Retrieval scene: papers fall into the RAG index. */
+.story-blackhole{display:none}
+.case-demo[data-phase="2"] .story-blackhole{display:block;animation:story-bh-in .9s ease-out}
+.story-bh-glow{fill:url(#story-bh-glow);animation:story-bh-pulse 3.2s ease-in-out infinite alternate}
+.story-bh-ring{fill:none;stroke:#ffdca8;stroke-width:2.5;filter:drop-shadow(0 0 6px #ffb869)}
+.story-bh-core{fill:#02040a}
+.story-bh-disk{fill:none;stroke:#ffe9c4;stroke-width:3;stroke-linecap:round;filter:drop-shadow(0 0 5px #ffb869)}
+.story-papers path{fill:#e6ecdc;stroke:#101a22;stroke-width:.9;stroke-linejoin:round}
+.story-blackhole text{paint-order:stroke;stroke:#080c14;stroke-width:5px;stroke-linejoin:round}
+.story-rag-explain text{font-size:17px;fill:#a9bda3}
+.story-rag-explain .story-rag-term{font-size:23px;font-weight:600;fill:#e3f2d8}
+@keyframes story-bh-in{from{opacity:0}}
+@keyframes story-bh-pulse{from{opacity:.7}}
