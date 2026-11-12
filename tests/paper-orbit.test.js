@@ -281,3 +281,25 @@ test('papers on the inner orbits are pulled in before the outer ones', () => {
   assert.ok(papers.every(p => p.order >= 0 && p.order <= 1));
   assert.ok(mean(papers.filter(p => p.radius < .3)) < mean(papers.filter(p => p.radius > .6)));
 });
+
+test('a free sheet is a translucent grey, dimmer when it is further away', () => {
+  const near = orbit.sheetLook(0, 1), far = orbit.sheetLook(0, .5);
+
+  assert.ok(near.a > .15 && near.a < .6, `alpha ${near.a}`);
+  assert.ok(Math.abs(near.r - near.g) < .05 && Math.abs(near.g - near.b) < .05, 'grey, not tinted');
+  assert.ok(far.a < near.a);
+});
+
+test('a sheet warms up as it falls and is gone by the time it reaches the hole', () => {
+  const free = orbit.sheetLook(0, 1), falling = orbit.sheetLook(.8, 1), gone = orbit.sheetLook(1, 1);
+
+  assert.ok(falling.r - falling.b > free.r - free.b + .2, 'warmer while falling');
+  assert.equal(gone.a, 0);
+});
+
+test('sheet looks stay within displayable ranges', () => {
+  for (let i = 0; i <= 20; i++) {
+    const look = orbit.sheetLook(i / 20, 1);
+    for (const value of [look.r, look.g, look.b, look.a]) assert.ok(value >= 0 && value <= 1.6);
+  }
+});

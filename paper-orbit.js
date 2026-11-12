@@ -164,7 +164,16 @@
     };
   }
 
-  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, SCATTER, CAROUSEL, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape, lensPoint, scatterPoint, carouselPoint });
+  // How a filled sheet looks: translucent grey while free, warming and brightening as it plunges, and faded out
+  // before it reaches the hole, where its particles take over. `light` is 0..1, dimmer for sheets further away.
+  const SHEET = Object.freeze({ grey: Object.freeze([.78, .8, .79]), warm: Object.freeze([1, .62, .36]), alpha: .34, warmFrom: .35, warmTo: .85, glow: .6, fadeFrom: .7, fadeTo: .92 });
+  function sheetLook(fall, light) {
+    const f = clamp01(fall), warmth = ramp(SHEET.warmFrom, SHEET.warmTo, f), boost = 1 + SHEET.glow * warmth;
+    const tone = SHEET.grey.map((grey, i) => (grey + (SHEET.warm[i] - grey) * warmth) * boost);
+    return { r: tone[0], g: tone[1], b: tone[2], a: SHEET.alpha * clamp01(light) * (1 - ramp(SHEET.fadeFrom, SHEET.fadeTo, f)) };
+  }
+
+  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, SCATTER, CAROUSEL, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape, lensPoint, scatterPoint, carouselPoint, sheetLook });
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PaperOrbit = api;
 })(typeof window === 'undefined' ? globalThis : window);

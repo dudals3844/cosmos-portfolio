@@ -3,7 +3,6 @@
 .paper-pin{position:sticky;top:0;height:100svh;overflow:hidden;isolation:isolate;background:linear-gradient(#05070c00,#05070c 14%,#05070c 86%,#05070c00)}
 .paper-stage{position:absolute;inset:0;z-index:0}
 .paper-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
-.paper-labels span{position:absolute;left:0;top:0;font-size:10px;letter-spacing:1.6px;color:#e3ecd9;white-space:nowrap;text-shadow:0 0 8px #05070c,0 0 3px #05070c;will-change:transform,opacity}
 .paper-results{position:absolute;left:0;right:0;top:calc(var(--hole-y,56%) + var(--hole-r,60px)*2.35);display:flex;justify-content:center;gap:12px;list-style:none;margin:0;padding:0 6vw}
 .paper-results li{display:flex;align-items:center;gap:11px;padding:8px 15px;border:1px solid #e9dcc033;border-radius:99px;background:#0a0e16d9;font-size:11px;letter-spacing:.4px;color:#d6dfca;white-space:nowrap;opacity:0;will-change:opacity,transform}
 .paper-passage{display:grid;gap:4px}
@@ -31,10 +30,10 @@
 .paper-hole.is-static .paper-stage{position:relative;height:78svh;margin:0 -6vw}
 .paper-hole.is-static .paper-beats>div,html:not(.js) .paper-beats>div{margin-top:26px}
 .paper-hole.is-static .paper-beats h4,html:not(.js) .paper-beats h4{font-size:22px}
-.paper-hole.is-static :is(.paper-guide,.paper-count,.paper-labels),html:not(.js) :is(.paper-guide,.paper-count){display:none}
+.paper-hole.is-static :is(.paper-guide,.paper-count),html:not(.js) :is(.paper-guide,.paper-count){display:none}
 /* Without WebGL or script the drawing is dropped, but the example passages stay in the reading order. */
 .paper-hole.is-flat .paper-stage,html:not(.js) .paper-stage{position:relative;height:auto;margin:30px 0 0}
-.paper-hole.is-flat :is(canvas,.paper-labels),html:not(.js) .paper-stage :is(canvas,.paper-labels){display:none}
+.paper-hole.is-flat canvas,html:not(.js) .paper-stage canvas{display:none}
 .paper-hole.is-flat .paper-results,html:not(.js) .paper-results{position:relative;top:auto;flex-wrap:wrap;padding:0}
 html:not(.js) .paper-results li{opacity:1}
 .paper-hole.is-flat .paper-steps,html:not(.js) .paper-steps{margin-top:34px;flex-wrap:wrap}
@@ -44,7 +43,6 @@ html:not(.js) .paper-steps li{color:#cfe2bd}
 @media(max-width:760px){
  .paper-status{top:92px;font-size:8px}.paper-count{font-size:10px}
  .paper-beats{top:116px}.paper-beats h4{font-size:24px;line-height:1.6;letter-spacing:-.7px}.paper-beats p{font-size:14px;line-height:1.9}
- .paper-labels span{font-size:9px;letter-spacing:1.2px}
  .paper-results{flex-direction:column;align-items:center;gap:7px}.paper-results li{padding:6px 13px;font-size:10px}
  .paper-steps{bottom:88px;gap:8px;font-size:9px}.paper-steps li{gap:8px}
  .paper-guide{bottom:54px;font-size:9px;gap:10px}

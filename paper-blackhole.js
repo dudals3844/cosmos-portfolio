@@ -9,16 +9,13 @@
   const beats = [...scene.querySelectorAll('[data-paper-beat]')];
   const steps = [...scene.querySelectorAll('.paper-steps li')];
   const results = [...scene.querySelectorAll('.paper-results li')];
-  const labelLayer = scene.querySelector('.paper-labels');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
-  const SOURCES = ['SSRN', 'Journal of Finance', 'arXiv'];
   const COMPACT = innerWidth < 760;
-  const PAPER_COUNT = COMPACT ? 64 : 140;
-  const POINTS_PER_PAPER = COMPACT ? 60 : 80;
+  // Hundreds of filled sheets fill the sky; each carries a few hidden particles that light up as it comes apart.
+  const PAPER_COUNT = COMPACT ? 250 : 600;
+  const POINTS_PER_PAPER = COMPACT ? 20 : 24;
   const DUST_COUNT = COMPACT ? 9000 : 20000;
-  const LABEL_COUNT = SOURCES.length * (COMPACT ? 2 : 3);
-  const LABEL_EVERY = Math.floor(PAPER_COUNT / LABEL_COUNT);
   const TOTAL = PAPER_COUNT * POINTS_PER_PAPER + DUST_COUNT;
   const TAU = Math.PI * 2;
   const STRIDE = 7;
@@ -33,7 +30,7 @@
   const SWIRL = { tilt: .36, tiltPortrait: .6 };
   // Free-floating sheets: a spread of sizes for depth, a size boost that shrinks away as they are pulled in,
   // and a flutter (pixels, per second) on top of their slow clockwise turn.
-  const FLOAT = { scaleMin: .55, scaleRange: 1.15, labelScale: 1.5, size: 1.7, tumble: .5, spinIn: 3, flutter: 10, flutterRate: .6, depth: .35 };
+  const FLOAT = { scaleMin: .55, scaleRange: 1.15, size: 2, tumble: .5, spinIn: 3, flutter: 10, flutterRate: .6, depth: .2 };
   // As the pull grows the whole swarm is squeezed: every orbit shrinks by up to `radius`, heights flatten by up to
   // `height`, and the turn speeds up by up to `spin` times, like water circling a drain.
   const COMPRESS = { radius: .55, height: .8, spin: 2.5 };
@@ -48,7 +45,6 @@
   // Within this many hole radii a sheet is pulled along its orbit: longer, thinner and smaller.
   const NEAR_REACH = 3.5, STRETCH = 1.9, SQUEEZE = .55, SHRINK = .3;
   const ROLL_SWAY = .35;
-  const LABEL_FLIP = .72;
   const SHADOW_EDGE = 1.02, SHADOW_SOFT = .12;
   // The bowl under the hole is a little dimmer than the arch over it.
   const LOWER_LIGHT = .8;
@@ -76,8 +72,10 @@
     showFinal();
   }
 
-  const gl = orbit && canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
-  if (!gl) { fallBack(orbit ? 'WebGL is unavailable' : 'paper-orbit.js did not load'); return; }
+  const sheetKit = window.PaperSheets;
+  if (!orbit || !sheetKit) { fallBack(`${orbit ? 'paper-sheets.js' : 'paper-orbit.js'} did not load`); return; }
+  const gl = canvas.getContext('webgl', { alpha: true, antialias: false, premultipliedAlpha: true });
+  if (!gl) { fallBack('WebGL is unavailable'); return; }
 
   const VERTEX = `attribute vec2 position;attribute float size;attribute vec3 color;attribute float glow;
   uniform vec2 resolution;uniform float pixelRatio;uniform float bloom;uniform float maxSize;
@@ -94,33 +92,18 @@
     gl_FragColor=vec4(tint*a,a*max(tint.r,max(tint.g,tint.b)));
   }`;
 
-  function compile(type, source) {
-    const shader = gl.createShader(type);
-    gl.shaderSource(shader, source); gl.compileShader(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw Error(gl.getShaderInfoLog(shader) || 'shader compilation failed');
-    return shader;
-  }
   const data = new Float32Array(TOTAL * STRIDE);
-  let uniforms = null;
+  const POINT_LAYOUT = [['position', 2, 0], ['size', 1, 2], ['color', 3, 3], ['glow', 1, 6]];
+  const sheets = sheetKit.create(gl, PAPER_COUNT);
+  let points = null, uniforms = null, maxPointSize = 1;
   function setupGraphics() {
-    const program = gl.createProgram();
-    gl.attachShader(program, compile(gl.VERTEX_SHADER, VERTEX));
-    gl.attachShader(program, compile(gl.FRAGMENT_SHADER, FRAGMENT));
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw Error(gl.getProgramInfoLog(program) || 'program link failed');
-    gl.useProgram(program);
-    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    sheets.setup();
+    points = { program: sheetKit.link(gl, VERTEX, FRAGMENT), buffer: gl.createBuffer() };
+    gl.bindBuffer(gl.ARRAY_BUFFER, points.buffer);
     gl.bufferData(gl.ARRAY_BUFFER, data.byteLength, gl.DYNAMIC_DRAW);
-    const bytes = Float32Array.BYTES_PER_ELEMENT;
-    for (const [name, size, offset] of [['position', 2, 0], ['size', 1, 2], ['color', 3, 3], ['glow', 1, 6]]) {
-      const location = gl.getAttribLocation(program, name);
-      gl.enableVertexAttribArray(location);
-      gl.vertexAttribPointer(location, size, gl.FLOAT, false, STRIDE * bytes, offset * bytes);
-    }
-    uniforms = Object.fromEntries(['resolution', 'pixelRatio', 'bloom', 'maxSize'].map(name => [name, gl.getUniformLocation(program, name)]));
-    gl.uniform1f(uniforms.maxSize, gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)[1]);
-    // Additive light: dense regions burn towards white, like the reference image.
-    gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    uniforms = Object.fromEntries(['resolution', 'pixelRatio', 'bloom', 'maxSize'].map(name => [name, gl.getUniformLocation(points.program, name)]));
+    maxPointSize = gl.getParameter(gl.ALIASED_POINT_SIZE_RANGE)[1];
+    gl.enable(gl.BLEND);
     gl.clearColor(0, 0, 0, 0);
   }
   try { setupGraphics(); } catch (error) { fallBack(error.message); return; }
@@ -138,18 +121,15 @@
   };
   const papers = Array.from({ length: PAPER_COUNT }, (_, index) => {
     const ride = orbit.carouselPoint(random);
-    const slot = index / LABEL_EVERY;
-    const label = index % LABEL_EVERY === 0 && slot < LABEL_COUNT ? document.createElement('span') : null;
-    if (label) { label.textContent = SOURCES[slot % SOURCES.length]; labelLayer.append(label); }
     // Bigger sheets read as nearer, so they are brighter too.
     const depth = random();
     return {
-      label, order: ride.order, ride: ride.radius, height: ride.height, spin: ride.spin,
+      order: ride.order, ride: ride.radius, height: ride.height, spin: ride.spin,
       flutterPhase: random() * TAU, flutterRate: FLOAT.flutterRate * (.6 + random() * .8), near: 1,
       theta: ride.angle, fall: 0, radius: 0, speed: 0, tilt: 1, cx: 0, cy: 0, liftY: 0,
       yaw: random() * TAU, yawRate: (random() - .5) * .9, pitch: random() * TAU, pitchRate: (random() - .5) * FLOAT.tumble,
       roll: (random() - .5) * .9, rollRate: .2 + random() * .4, rollPhase: random() * TAU,
-      scale: label ? FLOAT.labelScale : FLOAT.scaleMin + depth * FLOAT.scaleRange, light: label ? 1 : .55 + .45 * depth,
+      scale: FLOAT.scaleMin + depth * FLOAT.scaleRange, light: .55 + .45 * depth,
       ax: 0, ay: 0, bx: 0, by: 0,
     };
   });
@@ -208,8 +188,6 @@
     view = next;
     canvas.width = Math.round(view.width * view.ratio); canvas.height = Math.round(view.height * view.ratio);
     gl.viewport(0, 0, canvas.width, canvas.height);
-    gl.uniform2f(uniforms.resolution, view.width, view.height);
-    gl.uniform1f(uniforms.pixelRatio, view.ratio);
     stage.style.setProperty('--hole-x', `${view.x}px`);
     stage.style.setProperty('--hole-y', `${view.y}px`);
     stage.style.setProperty('--hole-r', `${view.hole}px`);
@@ -240,6 +218,7 @@
   }
   function movePapers(seconds, step) {
     const rest = PAPER_REST * view.hole, squeeze = smooth(state.pull);
+    const formed = smooth(ramp(.1, .55, state.pull)), shadow = view.hole * SHADOW_EDGE, shadowSoft = view.hole * SHADOW_SOFT;
     for (const paper of papers) {
       paper.fall = approach(paper.fall, orbit.infall(state.pull, paper.order), step);
       placePaper(paper, seconds, rest, squeeze);
@@ -256,6 +235,12 @@
       const tall = side * mix(Math.cos(paper.pitch + clock * paper.pitchRate), 1, near) * (1 + STRETCH * near);
       paper.ax = Math.cos(roll) * wide; paper.ay = Math.sin(roll) * wide;
       paper.bx = -Math.sin(roll) * tall; paper.by = Math.cos(roll) * tall;
+      const look = orbit.sheetLook(paper.fall, paper.light * paper.near);
+      // A sheet on the far side of a formed hole is hidden by its shadow.
+      const behind = Math.sin(paper.theta) < 0 ? orbit.clamp01((shadow - Math.hypot(paper.cx, paper.cy)) / shadowSoft) * formed : 0;
+      const x = view.x + paper.cx - paper.cy * orbit.DISK_ROLL, y = view.y + paper.cx * orbit.DISK_ROLL + paper.cy;
+      sheets.add(x, y, paper.ax * orbit.PAPER.halfWidth, paper.ay * orbit.PAPER.halfWidth,
+        paper.bx * orbit.PAPER.halfHeight, paper.by * orbit.PAPER.halfHeight, { ...look, a: look.a * (1 - behind) });
     }
   }
   function moveParticles(seconds, step) {
@@ -279,7 +264,8 @@
         blend = smooth(ramp(P.jitter[i], P.jitter[i] + DISSOLVE_SPAN, paper.fall));
         radius = mix(paper.radius, P.shapeR[i] * view.hole, blend);
         lift = mix(paper.liftY, P.shapeLift[i] * view.hole, blend);
-        baseTilt = paper.tilt; shade = paper.near;
+        // Hidden while the sheet is whole; they light up as it comes apart and take over from it.
+        baseTilt = paper.tilt; shade = paper.near * blend;
         if (blend > .999) {
           // Free points drift at their own orbital speed; wrapping is invisible once fully detached.
           const drift = P.drift[i] + (orbit.angularSpeed(radius, view.disk) - paper.speed) * seconds;
@@ -320,22 +306,21 @@
       data[o + 6] = P.glow[i] * hot;
     }
   }
-  function moveLabels() {
-    for (const paper of papers) {
-      if (!paper.label) continue;
-      const x = view.x + paper.cx - paper.cy * orbit.DISK_ROLL, y = view.y + paper.cx * orbit.DISK_ROLL + paper.cy;
-      // Names sit to the right of their sheet, and flip to the left near the right edge so they stay on screen.
-      const flipped = x > view.width * LABEL_FLIP;
-      paper.label.style.transform = `translate(${(x + (flipped ? -view.paper : view.paper)).toFixed(1)}px,${y.toFixed(1)}px)${flipped ? ' translateX(-100%)' : ''}`;
-      paper.label.style.opacity = (1 - ramp(.5, .8, paper.fall)).toFixed(2);
-    }
-  }
   function draw(seconds, still) {
     if (!resize()) return;
     const step = still ? 1 : seconds * FALL_SPEED;
-    movePapers(seconds, step); moveParticles(seconds, step); moveLabels();
-    gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+    sheets.begin();
+    movePapers(seconds, step); moveParticles(seconds, step);
     gl.clear(gl.COLOR_BUFFER_BIT);
+    // Sheets first, then the light on top, so the glow of the hole is never dimmed by paper.
+    sheets.draw(view.width, view.height);
+    sheetKit.bindLayout(gl, points.program, points.buffer, POINT_LAYOUT, STRIDE);
+    gl.uniform2f(uniforms.resolution, view.width, view.height);
+    gl.uniform1f(uniforms.pixelRatio, view.ratio);
+    gl.uniform1f(uniforms.maxSize, maxPointSize);
+    gl.bufferSubData(gl.ARRAY_BUFFER, 0, data);
+    // Additive light: dense regions burn towards white, like the reference image.
+    gl.blendFunc(gl.ONE, gl.ONE);
     gl.uniform1f(uniforms.bloom, 1); gl.drawArrays(gl.POINTS, 0, TOTAL);
     gl.uniform1f(uniforms.bloom, 0); gl.drawArrays(gl.POINTS, 0, TOTAL);
   }
