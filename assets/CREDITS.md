@@ -6,5 +6,5 @@ Slack, Twilio, Google Calendar, Gmail, Obsidian: Simple Icons 14.15.0. Brand mar
 https://github.com/simple-icons/simple-icons/tree/14.15.0/icons
 
 Paperclip: https://paperclip.app/favicon.svg
-Hermes Agent: https://hermes-agent.nousresearch.com/docs/img/favicon.ico
+OpenAI Dots: the blue dot cropped from the art card on https://openai.com/index/introducing-dots/ (OpenAI)
 Orca ADE: https://github.com/stablyai/orca/blob/main/resources/logo.svg
