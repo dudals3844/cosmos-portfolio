@@ -12,7 +12,7 @@ PUBLIC_FILES = (
     "assets/diversification-demo.js", "assets/favicon.svg",
     "assets/brown_mud_02.jpg", "assets/CREDITS.md",
     "assets/brands/gmail.svg", "assets/brands/googlecalendar.svg",
-    "assets/brands/openai-dots.png", "assets/brands/obsidian.svg",
+    "assets/brands/openai-dots.svg", "assets/brands/obsidian.svg",
     "assets/brands/orca.svg", "assets/brands/paperclip.svg",
     "assets/brands/slack.svg", "assets/brands/twilio.svg",
 )
