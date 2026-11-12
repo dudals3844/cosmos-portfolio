@@ -229,3 +229,55 @@ test('halo particles are split between the arch and the bowl', () => {
 
   assert.ok(lower > .2 && lower < .4, `lower share ${lower}`);
 });
+
+test('scattered dust spreads over the whole screen, not a ring', () => {
+  const random = orbit.createRandom(7);
+  const points = Array.from({ length: 2000 }, () => orbit.scatterPoint(random));
+  const reach = .5 + orbit.SCATTER.margin;
+
+  assert.ok(points.every(({ u, v }) => Math.abs(u) <= reach && Math.abs(v) <= reach));
+  // Every quadrant and the centre are covered.
+  for (const [su, sv] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
+    assert.ok(points.filter(({ u, v }) => u * su > .3 && v * sv > .3).length > 50);
+  }
+  assert.ok(points.filter(({ u, v }) => Math.hypot(u, v) < .1).length > 30);
+});
+
+test('scattered dust near the centre is pulled in before dust at the edges', () => {
+  const random = orbit.createRandom(11);
+  const points = Array.from({ length: 2000 }, () => orbit.scatterPoint(random));
+  const mean = list => list.reduce((sum, p) => sum + p.order, 0) / list.length;
+
+  assert.ok(points.every(({ order }) => order >= 0 && order <= 1));
+  assert.ok(mean(points.filter(p => Math.hypot(p.u, p.v) < .2)) < mean(points.filter(p => Math.hypot(p.u, p.v) > .5)));
+});
+
+test('free papers circle the centre on a wide, flat horizontal orbit at many heights', () => {
+  const random = orbit.createRandom(5);
+  const papers = Array.from({ length: 2000 }, () => orbit.carouselPoint(random));
+  const { radiusMin, radiusMax, heightReach } = orbit.CAROUSEL;
+
+  assert.ok(papers.every(p => p.radius >= radiusMin && p.radius <= radiusMax));
+  assert.ok(papers.every(p => Math.abs(p.height) <= heightReach));
+  assert.ok(papers.filter(p => p.height < -heightReach / 2).length > 100 && papers.filter(p => p.height > heightReach / 2).length > 100);
+  // Like a thick disk: more sheets near the plane than far above or below it.
+  assert.ok(papers.filter(p => Math.abs(p.height) < heightReach / 5).length > papers.filter(p => Math.abs(p.height) > heightReach * .6).length);
+  assert.ok(orbit.CAROUSEL.tilt < .5, 'the orbit is seen nearly edge-on, like a horizontal circle');
+});
+
+test('free papers all turn clockwise, slowly', () => {
+  const random = orbit.createRandom(9);
+  const papers = Array.from({ length: 500 }, () => orbit.carouselPoint(random));
+
+  // Screen y points down, so a growing angle turns clockwise on screen.
+  assert.ok(papers.every(p => p.spin > 0 && p.spin < .2));
+});
+
+test('papers on the inner orbits are pulled in before the outer ones', () => {
+  const random = orbit.createRandom(13);
+  const papers = Array.from({ length: 2000 }, () => orbit.carouselPoint(random));
+  const mean = list => list.reduce((sum, p) => sum + p.order, 0) / list.length;
+
+  assert.ok(papers.every(p => p.order >= 0 && p.order <= 1));
+  assert.ok(mean(papers.filter(p => p.radius < .3)) < mean(papers.filter(p => p.radius > .6)));
+});

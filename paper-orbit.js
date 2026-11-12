@@ -138,7 +138,33 @@
     return { x: band * (1 + widen * share) * cos, y: -(rise + riseGrowth * out) * sin ** (1 + flare * share), light };
   }
 
-  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape, lensPoint });
+  // Before the pull, dust is scattered all over the screen like stars. Positions are shares of the stage width (u)
+  // and height (v) from its centre; `margin` reaches a little past the edges.
+  const SCATTER = Object.freeze({ margin: .08, distanceShare: .7 });
+  function scatterPoint(random) {
+    const reach = .5 + SCATTER.margin;
+    const u = (random() * 2 - 1) * reach, v = (random() * 2 - 1) * reach;
+    const distance = Math.min(1, Math.hypot(u, v) / (reach * Math.SQRT2));
+    return { u, v, order: clamp01(distance * SCATTER.distanceShare + random() * (1 - SCATTER.distanceShare)) };
+  }
+  // Before the pull, papers ride a thick horizontal disk seen from slightly above, like the black hole's own disk,
+  // and turn slowly clockwise. Most sit close to the disk plane, a few float well above or below it.
+  // `radius` is a share of the stage width, `height` a share of its height from the plane, `spin` radians per second.
+  const CAROUSEL = Object.freeze({ radiusMin: .06, radiusMax: .7, heightReach: .32, tilt: .3, spinMin: .025, spinRange: .03, radiusShare: .7 });
+  function carouselPoint(random) {
+    const { radiusMin, radiusMax, heightReach, spinMin, spinRange, radiusShare } = CAROUSEL;
+    const reach = Math.sqrt(random());
+    return {
+      radius: radiusMin + reach * (radiusMax - radiusMin),
+      // Two uniforms summed peak in the middle, so the sheets crowd towards the plane.
+      height: (random() + random() - 1) * heightReach,
+      angle: random() * 2 * Math.PI,
+      spin: spinMin + random() * spinRange,
+      order: clamp01(reach * radiusShare + random() * (1 - radiusShare)),
+    };
+  }
+
+  const api = Object.freeze({ TIMELINE, PAPER, SHAPE, SCATTER, CAROUSEL, DISK_ROLL, MAX_ANGULAR_SPEED, clamp01, createRandom, sceneState, infall, angularSpeed, paperOutline, sampleShape, lensPoint, scatterPoint, carouselPoint });
   if (typeof module === 'object' && module.exports) module.exports = api;
   else root.PaperOrbit = api;
 })(typeof window === 'undefined' ? globalThis : window);

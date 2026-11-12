@@ -1,5 +1,5 @@
 'use strict';
-// Papers drawn as particles circle a disk; as the page scrolls the same particles fall in and settle into a black hole.
+// Papers drawn as particles float all over the screen; as the page scrolls the same particles spiral in and settle into a black hole.
 (() => {
   const scene = document.querySelector('.paper-hole');
   if (!scene) return;
@@ -14,8 +14,8 @@
 
   const SOURCES = ['SSRN', 'Journal of Finance', 'arXiv'];
   const COMPACT = innerWidth < 760;
-  const PAPER_COUNT = COMPACT ? 44 : 84;
-  const POINTS_PER_PAPER = COMPACT ? 72 : 96;
+  const PAPER_COUNT = COMPACT ? 64 : 140;
+  const POINTS_PER_PAPER = COMPACT ? 60 : 80;
   const DUST_COUNT = COMPACT ? 9000 : 20000;
   const LABEL_COUNT = SOURCES.length * (COMPACT ? 2 : 3);
   const LABEL_EVERY = Math.floor(PAPER_COUNT / LABEL_COUNT);
@@ -29,7 +29,16 @@
   // Hole centre as a share of the stage height, and its radius as a share of the shorter side.
   const HOLE_Y = .56, HOLE_SIZE = .085, HOLE_SIZE_PORTRAIT = .105, HOLE_MIN = 30, HOLE_MAX = 84;
   const DISK_WIDTH = .46, DISK_HEIGHT = .56, DISK_WIDTH_PORTRAIT = .62;
-  const SWIRL = { tilt: .36, tiltPortrait: .6, inner: .13, arms: 3, twist: 5.5, scatter: .45, thickness: .018, warmReach: .25, coreShare: .12, coreWidth: .12 };
+  // Tilt of the orbit the falling papers flatten into.
+  const SWIRL = { tilt: .36, tiltPortrait: .6 };
+  // Free-floating sheets: a spread of sizes for depth, a size boost that shrinks away as they are pulled in,
+  // and a flutter (pixels, per second) on top of their slow clockwise turn.
+  const FLOAT = { scaleMin: .55, scaleRange: 1.15, labelScale: 1.5, size: 1.7, tumble: .5, spinIn: 3, flutter: 10, flutterRate: .6, depth: .35 };
+  // As the pull grows the whole swarm is squeezed: every orbit shrinks by up to `radius`, heights flatten by up to
+  // `height`, and the turn speeds up by up to `spin` times, like water circling a drain.
+  const COMPRESS = { radius: .55, height: .8, spin: 2.5 };
+  // Dust starts as faint stars across the sky and brightens as it falls in.
+  const STAR_LIGHT = .35;
   const PAPER_WIDTH = .04, PAPER_WIDTH_MIN = 13, PAPER_WIDTH_MAX = 24;
   // Radius, in hole radii, at which a paper has finished coming apart.
   const PAPER_REST = 1.25;
@@ -118,26 +127,29 @@
 
   // Simulation state lives in typed arrays and is advanced in place: tens of thousands of particles move every frame.
   const random = orbit.createRandom(20261110);
-  const normal = () => Math.sqrt(-2 * Math.log(Math.max(1e-5, random()))) * Math.cos(TAU * random());
   const floats = () => new Float32Array(TOTAL);
   const P = {
     owner: new Int16Array(TOTAL), kind: new Uint8Array(TOTAL), lower: new Uint8Array(TOTAL),
     offX: floats(), offY: floats(), fan: floats(), drift: floats(), jitter: floats(),
-    swirlR: floats(), swirlLift: floats(), theta: floats(), order: floats(), fall: floats(),
+    freeR: floats(), freeA: floats(), theta: floats(), order: floats(), fall: floats(),
     shapeR: floats(), shapeTilt: floats(), shapeRoll: floats(), shapeLift: floats(),
     size: floats(), hotSize: floats(), phase: floats(), glow: floats(),
     baseR: floats(), baseG: floats(), baseB: floats(), hotR: floats(), hotG: floats(), hotB: floats(),
   };
   const papers = Array.from({ length: PAPER_COUNT }, (_, index) => {
-    const home = .3 + .7 * Math.sqrt(random());
+    const ride = orbit.carouselPoint(random);
     const slot = index / LABEL_EVERY;
     const label = index % LABEL_EVERY === 0 && slot < LABEL_COUNT ? document.createElement('span') : null;
     if (label) { label.textContent = SOURCES[slot % SOURCES.length]; labelLayer.append(label); }
+    // Bigger sheets read as nearer, so they are brighter too.
+    const depth = random();
     return {
-      home, label, order: orbit.clamp01((home - .3) / .7 * .8 + random() * .2),
-      theta: label ? slot / LABEL_COUNT * TAU : random() * TAU, lift: -(.012 + random() * .035), fall: 0, radius: 0, speed: 0,
-      yaw: random() * TAU, yawRate: (random() - .5) * .9, roll: (random() - .5) * .9,
-      rollRate: .2 + random() * .4, rollPhase: random() * TAU, scale: label ? 1.3 : .75 + random() * .6,
+      label, order: ride.order, ride: ride.radius, height: ride.height, spin: ride.spin,
+      flutterPhase: random() * TAU, flutterRate: FLOAT.flutterRate * (.6 + random() * .8), near: 1,
+      theta: ride.angle, fall: 0, radius: 0, speed: 0, tilt: 1, cx: 0, cy: 0, liftY: 0,
+      yaw: random() * TAU, yawRate: (random() - .5) * .9, pitch: random() * TAU, pitchRate: (random() - .5) * FLOAT.tumble,
+      roll: (random() - .5) * .9, rollRate: .2 + random() * .4, rollPhase: random() * TAU,
+      scale: label ? FLOAT.labelScale : FLOAT.scaleMin + depth * FLOAT.scaleRange, light: label ? 1 : .55 + .45 * depth,
       ax: 0, ay: 0, bx: 0, by: 0,
     };
   });
@@ -164,19 +176,16 @@
       const point = sheet[i % POINTS_PER_PAPER];
       P.owner[i] = paperIndex; P.offX[i] = point.x; P.offY[i] = point.y;
       P.fan[i] = (random() - .5) * TAU; P.jitter[i] = DISSOLVE_START + random() * DISSOLVE_STAGGER;
-      P.size[i] = 1.5; P.baseR[i] = .8; P.baseG[i] = .82; P.baseB[i] = .78;
+      const light = papers[paperIndex].light;
+      P.size[i] = 1.5; P.baseR[i] = .8 * light; P.baseG[i] = .82 * light; P.baseB[i] = .78 * light;
       continue;
     }
-    // Dust follows loose spiral arms, with a warmer, denser band hugging the dark core.
-    const radius = random() < SWIRL.coreShare ? SWIRL.inner + random() ** 2 * SWIRL.coreWidth : SWIRL.inner + random() ** .75 * (1 - SWIRL.inner);
-    const onArm = random() > .35;
-    const warmth = orbit.clamp01(1 - (radius - SWIRL.inner) / SWIRL.warmReach);
-    const light = (.2 + .4 * random()) * (1 + warmth * .8);
-    P.owner[i] = -1; P.swirlR[i] = radius; P.swirlLift[i] = normal() * SWIRL.thickness * (.4 + radius);
-    P.theta[i] = onArm ? Math.floor(random() * SWIRL.arms) * TAU / SWIRL.arms + radius * SWIRL.twist + normal() * SWIRL.scatter : random() * TAU;
-    P.order[i] = orbit.clamp01((radius - SWIRL.inner) / (1 - SWIRL.inner) * .5 + random() * .5);
-    P.size[i] = .9 + random();
-    P.baseR[i] = mix(.82, 1, warmth) * light; P.baseG[i] = mix(.85, .78, warmth) * light; P.baseB[i] = mix(.9, .7, warmth) * light;
+    // Dust is scattered across the sky like stars, a few of them bright, and falls in from where it is.
+    const star = orbit.scatterPoint(random);
+    const light = .25 + .75 * random() ** 2.5, cool = random() * .12;
+    P.owner[i] = -1; P.offX[i] = star.u; P.offY[i] = star.v; P.order[i] = star.order;
+    P.size[i] = .8 + random() * 1.2;
+    P.baseR[i] = (.9 - cool) * light; P.baseG[i] = (.92 - cool * .5) * light; P.baseB[i] = light;
   }
 
   let view = null, state = orbit.sceneState(0), clock = 0, lastFrame = 0, frame = 0, scheduled = false, shownBeat = -1, stillDrawn = false;
@@ -204,48 +213,73 @@
     stage.style.setProperty('--hole-x', `${view.x}px`);
     stage.style.setProperty('--hole-y', `${view.y}px`);
     stage.style.setProperty('--hole-r', `${view.hole}px`);
+    // A star's resting place depends only on the stage size, so its polar position is worked out here once.
+    for (let i = PAPER_COUNT * POINTS_PER_PAPER; i < TOTAL; i++) {
+      const dx = P.offX[i] * view.width, dy = P.offY[i] * view.height;
+      P.freeR[i] = Math.hypot(dx, dy); P.freeA[i] = Math.atan2(dy, dx);
+    }
     return true;
   }
 
+  // A sheet rides the wide horizontal disk clockwise. As the pull grips it, its orbit shrinks, its height above
+  // or below the plane squeezes to nothing and the disk tilts to the black hole's, so the whole swarm is
+  // compressed towards the centre before it falls in. Scrolling back up runs the same path in reverse.
+  function placePaper(paper, seconds, rest, squeeze) {
+    const grip = Math.min(1, paper.fall * FLOAT.spinIn), flat = smooth(paper.fall);
+    const free = paper.ride * view.width * (1 - COMPRESS.radius * squeeze);
+    paper.radius = mix(free, rest, paper.fall ** PLUNGE_CURVE);
+    paper.speed = mix(paper.spin * (1 + COMPRESS.spin * squeeze), orbit.angularSpeed(paper.radius, view.disk), grip);
+    paper.theta += paper.speed * seconds;
+    paper.tilt = mix(orbit.CAROUSEL.tilt, view.tilt, flat);
+    const wave = clock * paper.flutterRate + paper.flutterPhase, flutter = FLOAT.flutter * (1 - flat);
+    paper.liftY = paper.height * view.height * (1 - COMPRESS.height * squeeze) * (1 - flat) + Math.cos(wave * 1.3) * flutter;
+    paper.cx = paper.radius * Math.cos(paper.theta) + Math.sin(wave) * flutter;
+    paper.cy = paper.radius * Math.sin(paper.theta) * paper.tilt + paper.liftY;
+    // The near half of the disk (lower on screen) reads closer: bigger and brighter.
+    paper.near = 1 + FLOAT.depth * Math.sin(paper.theta) * (1 - flat);
+  }
   function movePapers(seconds, step) {
+    const rest = PAPER_REST * view.hole, squeeze = smooth(state.pull);
     for (const paper of papers) {
       paper.fall = approach(paper.fall, orbit.infall(state.pull, paper.order), step);
-      const rest = PAPER_REST * view.hole;
-      paper.radius = mix(paper.home * view.disk, rest, paper.fall ** PLUNGE_CURVE);
-      paper.speed = orbit.angularSpeed(paper.radius, view.disk);
-      paper.theta += paper.speed * seconds;
-      const near = smooth(1 - ramp(0, NEAR_REACH * view.hole, paper.radius - rest));
+      placePaper(paper, seconds, rest, squeeze);
+      // Only a sheet in the pull's grip is stretched along its orbit; a free one near the centre keeps its shape.
+      const near = smooth(1 - ramp(0, NEAR_REACH * view.hole, paper.radius - rest)) * Math.min(1, paper.fall * FLOAT.spinIn);
       // Far out, yaw turns the sheet edge-on and back while roll sways it within the screen plane.
       const sway = paper.roll + Math.sin(clock * paper.rollRate + paper.rollPhase) * ROLL_SWAY;
       // Near the hole the long side swings round to follow the orbit (a sheet looks the same turned half way).
-      const along = Math.atan2(Math.cos(paper.theta) * view.tilt, -Math.sin(paper.theta)) - Math.PI / 2 - sway;
+      const along = Math.atan2(Math.cos(paper.theta) * paper.tilt, -Math.sin(paper.theta)) - Math.PI / 2 - sway;
       const roll = sway + (along - Math.PI * Math.round(along / Math.PI)) * near;
-      const side = view.paper * paper.scale * (1 - SHRINK * near);
+      const side = view.paper * paper.scale * paper.near * mix(FLOAT.size, 1, smooth(paper.fall)) * (1 - SHRINK * near);
+      // Yaw and pitch tumble the sheet in depth, so it shows edge-on or foreshortened from time to time.
       const wide = side * mix(Math.cos(paper.yaw + clock * paper.yawRate), 1, near) * (1 - SQUEEZE * near);
-      const tall = side * (1 + STRETCH * near);
+      const tall = side * mix(Math.cos(paper.pitch + clock * paper.pitchRate), 1, near) * (1 + STRETCH * near);
       paper.ax = Math.cos(roll) * wide; paper.ay = Math.sin(roll) * wide;
       paper.bx = -Math.sin(roll) * tall; paper.by = Math.cos(roll) * tall;
     }
   }
   function moveParticles(seconds, step) {
-    const formed = smooth(ramp(.1, .55, state.pull));
+    const formed = smooth(ramp(.1, .55, state.pull)), starSqueeze = 1 - COMPRESS.radius * smooth(state.pull);
     const shadow = view.hole * SHADOW_EDGE, shadowSoft = view.hole * SHADOW_SOFT;
     for (let i = 0, o = 0; i < TOTAL; i++, o += STRIDE) {
       const owner = P.owner[i];
-      let blend, radius, lift, theta, offsetX = 0, offsetY = 0;
+      let blend, radius, lift, theta, baseTilt, shade = 1, offsetX = 0, offsetY = 0;
       if (owner < 0) {
         P.fall[i] = approach(P.fall[i], orbit.infall(state.pull, P.order[i]), step);
         blend = smooth(P.fall[i]);
-        radius = mix(P.swirlR[i] * view.disk, P.shapeR[i] * view.hole, blend);
-        lift = mix(P.swirlLift[i] * view.disk, P.shapeLift[i] * view.hole, blend);
-        P.theta[i] += orbit.angularSpeed(radius, view.disk) * seconds;
-        theta = P.theta[i];
+        radius = mix(P.freeR[i] * starSqueeze, P.shapeR[i] * view.hole, blend);
+        lift = P.shapeLift[i] * view.hole * blend;
+        // Stars hold still until the pull reaches them, then start to turn about the hole.
+        P.theta[i] += orbit.angularSpeed(radius, view.disk) * seconds * Math.min(1, P.fall[i] * FLOAT.spinIn);
+        theta = P.freeA[i] + P.theta[i];
+        baseTilt = 1; shade = mix(STAR_LIGHT, 1, blend);
       } else {
         // A paper's points ride with the sheet, then fan out around the orbit as it comes apart.
         const paper = papers[owner];
         blend = smooth(ramp(P.jitter[i], P.jitter[i] + DISSOLVE_SPAN, paper.fall));
         radius = mix(paper.radius, P.shapeR[i] * view.hole, blend);
-        lift = mix(paper.lift * view.disk * (1 - paper.fall), P.shapeLift[i] * view.hole, blend);
+        lift = mix(paper.liftY, P.shapeLift[i] * view.hole, blend);
+        baseTilt = paper.tilt; shade = paper.near;
         if (blend > .999) {
           // Free points drift at their own orbital speed; wrapping is invisible once fully detached.
           const drift = P.drift[i] + (orbit.angularSpeed(radius, view.disk) - paper.speed) * seconds;
@@ -256,7 +290,7 @@
         offsetY = (P.offX[i] * paper.ay + P.offY[i] * paper.by) * (1 - blend);
       }
       const cos = Math.cos(theta), sin = Math.sin(theta);
-      const tilt = mix(view.tilt, P.shapeTilt[i], blend);
+      const tilt = mix(baseTilt, P.shapeTilt[i], blend);
       // The slant is small enough to treat cos(roll) as 1 and sin(roll) as roll.
       const roll = mix(orbit.DISK_ROLL, P.shapeRoll[i], blend);
       const flatX = radius * cos, flatY = radius * sin * tilt + lift;
@@ -270,7 +304,7 @@
         y = mix(y, view.y + lx * orbit.DISK_ROLL + ly, blend);
         lensLight = lens.light * (P.lower[i] ? LOWER_LIGHT : 1);
       }
-      let light = TWINKLE_FLOOR + (1 - TWINKLE_FLOOR) * (.5 + .5 * Math.sin(clock * TWINKLE_RATE + P.phase[i]));
+      let light = shade * (TWINKLE_FLOOR + (1 - TWINKLE_FLOOR) * (.5 + .5 * Math.sin(clock * TWINKLE_RATE + P.phase[i])));
       if (sin < 0 && formed > 0) {
         // The far half of every orbit passes behind the hole.
         const depth = (shadow - Math.hypot(x - view.x, y - view.y)) / shadowSoft;
@@ -289,9 +323,7 @@
   function moveLabels() {
     for (const paper of papers) {
       if (!paper.label) continue;
-      const flatX = paper.radius * Math.cos(paper.theta);
-      const flatY = paper.radius * Math.sin(paper.theta) * view.tilt + paper.lift * view.disk * (1 - paper.fall);
-      const x = view.x + flatX - flatY * orbit.DISK_ROLL, y = view.y + flatX * orbit.DISK_ROLL + flatY;
+      const x = view.x + paper.cx - paper.cy * orbit.DISK_ROLL, y = view.y + paper.cx * orbit.DISK_ROLL + paper.cy;
       // Names sit to the right of their sheet, and flip to the left near the right edge so they stay on screen.
       const flipped = x > view.width * LABEL_FLIP;
       paper.label.style.transform = `translate(${(x + (flipped ? -view.paper : view.paper)).toFixed(1)}px,${y.toFixed(1)}px)${flipped ? ' translateX(-100%)' : ''}`;
